@@ -1,8 +1,11 @@
+import { add } from 'testModule.js';
+
 system.println("Hello World", "Testing");
 
 const hello = 123;
 
 function main() {
+    system.println(add(4, 10));
     system.println("Hello World from main");
     system.print("Hello");
     system.println("World");

@@ -285,6 +285,37 @@ std::string ReadFile(const std::string& filename)
     return result;
 }
 
+v8::MaybeLocal<v8::Module> ModuleResolveCallback(
+    v8::Local<v8::Context> context, 
+    v8::Local<v8::String> specifier, 
+    v8::Local<v8::Module> referrer)
+{
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+
+    v8::String::Utf8Value strValue(v8::Isolate::GetCurrent(), specifier);
+    printf("ModuleResolveCallback %s\n", *strValue);
+
+    std::string moduleSource = ReadFile(*strValue);
+
+    v8::Local<v8::String> name = v8::String::NewFromUtf8(isolate, "test.js");
+    v8::ScriptOrigin origin(
+        name,
+        v8::Integer::New(isolate, 0),
+        v8::Integer::New(isolate, 0),
+        v8::False(isolate),
+        v8::Local<v8::Integer>(),
+        v8::Local<v8::Value>(),
+        v8::False(isolate),
+        v8::False(isolate),
+        v8::True(isolate));
+
+
+    v8::ScriptCompiler::Source source(v8::String::NewFromUtf8(isolate, moduleSource.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), origin);
+    v8::MaybeLocal<v8::Module> module = v8::ScriptCompiler::CompileModule(isolate, &source).ToLocalChecked();
+
+    return module;
+}
+
 int main(int argc, const char** argv)
 {
     Engine::InitalizeV8(argv[0]);
@@ -317,9 +348,47 @@ int main(int argc, const char** argv)
         Script script(engine, global);
         script.Enable();
 
+        std::string moduleSource = ReadFile("test.js");
+
+        v8::TryCatch tryCatch(isolate);
+
+        v8::Local<v8::String> name = v8::String::NewFromUtf8(isolate, "test.js");
+        v8::ScriptOrigin origin(
+            name,
+            v8::Integer::New(isolate, 0),
+            v8::Integer::New(isolate, 0),
+            v8::False(isolate),
+            v8::Local<v8::Integer>(),
+            v8::Local<v8::Value>(),
+            v8::False(isolate),
+            v8::False(isolate),
+            v8::True(isolate));
+
+
+        v8::ScriptCompiler::Source source(v8::String::NewFromUtf8(isolate, moduleSource.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), origin);
+        v8::MaybeLocal<v8::Module> mayModule = v8::ScriptCompiler::CompileModule(isolate, &source);
+        if(tryCatch.HasCaught()) 
+        {
+            v8::Local<v8::Value> ex = tryCatch.Exception();
+
+            v8::String::Utf8Value str(isolate, ex);
+
+            printf("Exception %s\n", *str);
+        } 
+        else 
+        {
+            v8::Local<v8::Module> module = mayModule.ToLocalChecked();
+            v8::Module::Status status = module->GetStatus();
+
+            v8::Maybe<bool> res = module->InstantiateModule(script.GetContext(), ModuleResolveCallback);
+
+            module->Evaluate(script.GetContext()).ToLocalChecked();
+            status = module->GetStatus();
+        }
+
         std::string jsSource = ReadFile("test.js");
 
-        script.CompileAndRun(jsSource);
+        //script.CompileAndRun(jsSource);
 
         v8::Local<v8::Function> func = script.GetFunction("main").ToLocalChecked();
         func->Call(script.GetContext(), v8::Null(isolate), 0, {});
