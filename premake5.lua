@@ -2,7 +2,7 @@ workspace "Scripter"
   configurations { "Debug", "Release" }
 
 project "Scripter"
-  kind "ConsoleApp"
+  kind "SharedLib"
   
   language "C++"
   cppdialect "C++17"
@@ -10,7 +10,7 @@ project "Scripter"
   targetdir "bin/%{cfg.buildcfg}"
   objdir "bin/%{cfg.buildcfg}/obj/%{prj.name}"
 
-  files { "src/**.h", "src/**.cpp" }
+  files { "src/scripter/**.h", "src/scripter/**.cpp" }
 
   filter "system:linux"
     toolset "clang"
@@ -20,6 +20,31 @@ project "Scripter"
     
     links { "v8_monolith", "pthread" }
 
+    buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
+
+  filter "configurations:Debug"
+    defines { "DEBUG" }
+    symbols "On"
+
+  filter "configurations:Release"
+    defines { "NDEBUG" }
+    optimize "On"
+
+project "TestProgram"
+  kind "ConsoleApp"
+  
+  language "C++"
+  cppdialect "C++17"
+
+  targetdir "bin/%{cfg.buildcfg}"
+  objdir "bin/%{cfg.buildcfg}/obj/%{prj.name}"
+
+  files { "src/main.cpp" }
+
+  filter "system:linux"
+    toolset "clang"
+    includedirs { "src/", "vendor/v8/include" }
+    links { "Scripter" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
 
   filter "configurations:Debug"

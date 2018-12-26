@@ -9,7 +9,6 @@ namespace v8 {
 
 #include <v8.h>
 
-
 class Engine 
 {
 private:

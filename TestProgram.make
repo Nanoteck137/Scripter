@@ -21,18 +21,18 @@ ifeq ($(config),debug)
     AR = ar
   endif
   TARGETDIR = bin/Debug
-  TARGET = $(TARGETDIR)/libScripter.so
-  OBJDIR = bin/Debug/obj/Scripter
+  TARGET = $(TARGETDIR)/TestProgram
+  OBJDIR = bin/Debug/obj/TestProgram
   DEFINES += -DDEBUG
-  INCLUDES += -Ivendor/v8/include
+  INCLUDES += -Isrc -Ivendor/v8/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -fPIC -g -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -fPIC -g -std=c++17 -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -std=c++17 -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lv8_monolith -lpthread
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -Lvendor/v8/libs -shared -Wl,-soname=libScripter.so
+  LIBS += bin/Debug/libScripter.so
+  LDDEPS += bin/Debug/libScripter.so
+  ALL_LDFLAGS += $(LDFLAGS) -Wl,-rpath,'$$ORIGIN'
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -56,18 +56,18 @@ ifeq ($(config),release)
     AR = ar
   endif
   TARGETDIR = bin/Release
-  TARGET = $(TARGETDIR)/libScripter.so
-  OBJDIR = bin/Release/obj/Scripter
+  TARGET = $(TARGETDIR)/TestProgram
+  OBJDIR = bin/Release/obj/TestProgram
   DEFINES += -DNDEBUG
-  INCLUDES += -Ivendor/v8/include
+  INCLUDES += -Isrc -Ivendor/v8/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -fPIC -std=c++17 -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -std=c++17 -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lv8_monolith -lpthread
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -Lvendor/v8/libs -shared -Wl,-soname=libScripter.so
+  LIBS += bin/Release/libScripter.so
+  LDDEPS += bin/Release/libScripter.so
+  ALL_LDFLAGS += $(LDFLAGS) -Wl,-rpath,'$$ORIGIN'
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -81,9 +81,7 @@ all: prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/Engine.o \
-	$(OBJDIR)/Library.o \
-	$(OBJDIR)/Script.o \
+	$(OBJDIR)/main.o \
 
 RESOURCES := \
 
@@ -95,7 +93,7 @@ ifeq (.exe,$(findstring .exe,$(ComSpec)))
 endif
 
 $(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES) | $(TARGETDIR)
-	@echo Linking Scripter
+	@echo Linking TestProgram
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -118,7 +116,7 @@ else
 endif
 
 clean:
-	@echo Cleaning Scripter
+	@echo Cleaning TestProgram
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -142,13 +140,7 @@ else
 $(OBJECTS): | $(OBJDIR)
 endif
 
-$(OBJDIR)/Engine.o: src/scripter/Engine.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Library.o: src/scripter/Library.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Script.o: src/scripter/Script.cpp
+$(OBJDIR)/main.o: src/main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

@@ -10,12 +10,14 @@ endif
 
 ifeq ($(config),debug)
   Scripter_config = debug
+  TestProgram_config = debug
 endif
 ifeq ($(config),release)
   Scripter_config = release
+  TestProgram_config = release
 endif
 
-PROJECTS := Scripter
+PROJECTS := Scripter TestProgram
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -27,8 +29,15 @@ ifneq (,$(Scripter_config))
 	@${MAKE} --no-print-directory -C . -f Scripter.make config=$(Scripter_config)
 endif
 
+TestProgram: Scripter
+ifneq (,$(TestProgram_config))
+	@echo "==== Building TestProgram ($(TestProgram_config)) ===="
+	@${MAKE} --no-print-directory -C . -f TestProgram.make config=$(TestProgram_config)
+endif
+
 clean:
 	@${MAKE} --no-print-directory -C . -f Scripter.make clean
+	@${MAKE} --no-print-directory -C . -f TestProgram.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -41,5 +50,6 @@ help:
 	@echo "   all (default)"
 	@echo "   clean"
 	@echo "   Scripter"
+	@echo "   TestProgram"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
