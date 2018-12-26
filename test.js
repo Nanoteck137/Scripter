@@ -4,6 +4,12 @@ system.println("Hello World", "Testing");
 
 const hello = 123;
 
+let fd = system.open("test.txt", system.FILE_WRITE_ONLY | system.FILE_CREATE | system.FILE_TRUNCATE);
+system.write(fd, "Hello World this is a test for fun");
+system.close(fd);
+
+system.println(add(4, 10));
+
 function main() {
     system.println(add(4, 10));
     system.println("Hello World from main");

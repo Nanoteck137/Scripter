@@ -23,7 +23,7 @@ public:
     void StartIsolate();
     void EndIsolate();
 
-    void ThrowException(const std::string& name);
+    void ThrowException(const char* format, ...);
 
     v8::Isolate* GetIsolate() const { return m_Isolate; }
 public:

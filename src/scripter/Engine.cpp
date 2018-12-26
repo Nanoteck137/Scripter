@@ -29,10 +29,17 @@ void Engine::EndIsolate()
     m_Isolate->Exit();
 }
 
-void Engine::ThrowException(const std::string& name)
+void Engine::ThrowException(const char* format, ...)
 {
+    char buffer[1024] = {};
+
+    va_list args;
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
     v8::HandleScope handleScope(m_Isolate);
-    m_Isolate->ThrowException(v8::String::NewFromUtf8(m_Isolate, name.c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+    m_Isolate->ThrowException(v8::String::NewFromUtf8(m_Isolate, buffer, v8::NewStringType::kNormal).ToLocalChecked());
 }
 
 void Engine::InitalizeV8(const char* execPath)
