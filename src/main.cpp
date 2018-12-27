@@ -240,8 +240,6 @@ int main(int argc, const char** argv)
     Engine* engine = new Engine();
 
     v8::Isolate* isolate = engine->GetIsolate();
-    isolate->SetHostImportModuleDynamicallyCallback(TestCallback);
-    isolate->SetHostInitializeImportMetaObjectCallback(HostInitializeImportMetaObjectCallbackTest);
 
     engine->StartIsolate();
     {
