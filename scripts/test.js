@@ -1,6 +1,4 @@
-import "testModule.js";
-
-export function main() {
+function main() {
     system.println("WOOOWW");
     //system.println(add(4, 10));
     system.println("Hello World from main");

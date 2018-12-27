@@ -1,6 +1,6 @@
 # My TODO List
 
-- Javascript modules
+- Javascript modules, implement my own system 
 - Better way to add custom libraries.
 - Better way to convert c++ classes to js objects/class
 - More!?
