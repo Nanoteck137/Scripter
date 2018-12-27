@@ -65,6 +65,36 @@ void Engine::ThrowException(const char* format, ...)
     m_Isolate->ThrowException(v8::String::NewFromUtf8(m_Isolate, buffer, v8::NewStringType::kNormal).ToLocalChecked());
 }
 
+void Engine::PrintObject(v8::Local<v8::Context> context, v8::Local<v8::Object> object)
+{
+    printf("-- OBJECT --\n");
+    v8::String::Utf8Value objectStr(m_Isolate, object);
+    printf("%s\n", *objectStr);
+
+    v8::Local<v8::Array> properties = object->GetPropertyNames();
+    int length = properties->Length();
+    printf("Number of properties = %d:\n", length);
+    for(int i = 0; i < length; i++)
+    {
+        v8::Local<v8::Value> key = properties->Get(context, i).ToLocalChecked();
+        v8::String::Utf8Value str(m_Isolate, key);
+
+        printf("\t%d. %s\n", (i + 1), *str);
+    }
+
+    printf("------------\n");
+}
+
+void Engine::PrintValue(v8::Local<v8::Value> value)
+{
+    printf("-- VALUE --\n");
+    
+    v8::String::Utf8Value str(m_Isolate, value);
+    printf("%s\n", *str);
+
+    printf("-----------\n");
+}
+
 void Engine::InitalizeV8(const char* execPath)
 {
     // Initialize V8.

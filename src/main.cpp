@@ -257,11 +257,28 @@ v8::MaybeLocal<v8::Module> ModuleResolveCallback(
         v8::False(isolate),
         v8::True(isolate));
 
-
     v8::ScriptCompiler::Source source(v8::String::NewFromUtf8(isolate, moduleSource.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), origin);
     v8::MaybeLocal<v8::Module> module = v8::ScriptCompiler::CompileModule(isolate, &source).ToLocalChecked();
 
     return module;
+}
+
+JSFUNC(test) 
+{
+    JS_FUNC_START();
+    v8::HandleScope handleScope(isolate);
+    
+    printf("Constructor\n");
+}
+
+void WeakCallback(const v8::WeakCallbackInfo<void*>& data)
+{
+    printf("WeakCallback\n");
+}
+
+v8::MaybeLocal<v8::Promise> TestCallback(v8::Local<v8::Context> context, v8::Local<v8::ScriptOrModule> referrer, v8::Local<v8::String> specifier)
+{
+    printf("TestCallback\n");
 }
 
 int main(int argc, const char** argv)
@@ -271,7 +288,10 @@ int main(int argc, const char** argv)
     Engine* engine = new Engine();
 
     v8::Isolate* isolate = engine->GetIsolate();
+    
+
     engine->StartIsolate();
+    isolate->SetHostImportModuleDynamicallyCallback(TestCallback);
     {
         v8::HandleScope handleScope(isolate);
 
@@ -300,6 +320,12 @@ int main(int argc, const char** argv)
 
         v8::TryCatch tryCatch(isolate);
 
+        std::string jsSource = ReadFile("test2.js");
+
+        script.CompileAndRun(jsSource);
+        engine->PrintObject(script.GetContext(), script.GetContext()->Global());
+        engine->PrintObject(script.GetContext(), script.GetContext()->GetExtrasBindingObject());
+
         v8::Local<v8::String> name = v8::String::NewFromUtf8(isolate, "test.js");
         v8::ScriptOrigin origin(
             name,
@@ -315,40 +341,44 @@ int main(int argc, const char** argv)
 
         v8::ScriptCompiler::Source source(v8::String::NewFromUtf8(isolate, moduleSource.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), origin);
         v8::MaybeLocal<v8::Module> mayModule = v8::ScriptCompiler::CompileModule(isolate, &source);
-        if(tryCatch.HasCaught()) 
+        if(tryCatch.HasCaught())
         {
-            v8::Local<v8::Value> ex = tryCatch.Exception();
+            v8::Local<v8::Message> message = tryCatch.Message();
+            v8::String::Utf8Value ex(isolate, message->Get());
+            v8::String::Utf8Value name(isolate, message->GetScriptResourceName());
 
-            v8::String::Utf8Value str(isolate, ex);
+            v8::Local<v8::StackTrace> trace = message->GetStackTrace();
+            if(!trace.IsEmpty())
+                printf("Frames: %d\n", trace->GetFrameCount());
 
-            printf("Exception %s\n", *str);
+            printf("Exception - %s:%s\n", *name, *ex);
         } 
         else 
         {
             v8::Local<v8::Module> module = mayModule.ToLocalChecked();
-            v8::Module::Status status = module->GetStatus();
-
             v8::Maybe<bool> res = module->InstantiateModule(script.GetContext(), ModuleResolveCallback);
 
             module->Evaluate(script.GetContext());
+            
+
             if(tryCatch.HasCaught())
             {
-                v8::Local<v8::Value> ex = tryCatch.Exception();
+                v8::Local<v8::Message> message = tryCatch.Message();
+                v8::String::Utf8Value ex(isolate, message->Get());
+                v8::String::Utf8Value name(isolate, message->GetScriptResourceName());
 
-                v8::String::Utf8Value str(isolate, ex);
+                v8::String::Utf8Value test(isolate, tryCatch.StackTrace(script.GetContext()).ToLocalChecked());
 
-                printf("Exception %s\n", *str);
+                printf("Exception - %s:%s\n\t%s\n", *name, *ex, *test);
             } 
 
-            status = module->GetStatus();
+            v8::Local<v8::Context> context = script.GetContext();
+            v8::Local<v8::Object> obj = context->Global();
+
+            engine->PrintObject(context, obj);
+            engine->PrintObject(context, context->GetExtrasBindingObject());
         }
 
-        std::string jsSource = ReadFile("test.js");
-
-        //script.CompileAndRun(jsSource);
-
-        v8::Local<v8::Function> func = script.GetFunction("main").ToLocalChecked();
-        func->Call(script.GetContext(), v8::Null(isolate), 0, {});
 
         script.Disable();
     }

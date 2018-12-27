@@ -48,6 +48,9 @@ public:
 
     void ThrowException(const char* format, ...);
 
+    void PrintObject(v8::Local<v8::Context> context, v8::Local<v8::Object> object);
+    void PrintValue(v8::Local<v8::Value> value);
+
     v8::Isolate* GetIsolate() const { return m_Isolate; }
 public:
     static void InitalizeV8(const char* execPath);

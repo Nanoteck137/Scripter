@@ -31,7 +31,20 @@
         "type_traits": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "ctime": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "functional": "cpp",
+        "mutex": "cpp",
+        "ratio": "cpp",
+        "thread": "cpp",
+        "valarray": "cpp",
+        "algorithm": "cpp"
     },
 
     "javascript.format.enable": false,

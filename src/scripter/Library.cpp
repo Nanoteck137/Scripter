@@ -66,7 +66,7 @@ v8::Local<v8::ObjectTemplate> Library::GenerateObject(Engine* engine)
     for (std::unordered_map<std::string, v8::FunctionCallback>::iterator it = m_Functions.begin(); 
             it != m_Functions.end(); it++)
     {
-        result->Set(isolate, it->first.c_str(), v8::FunctionTemplate::New(isolate, it->second));
+        result->Set(isolate, it->first.c_str(), v8::FunctionTemplate::New(isolate, it->second, {}, {}, 0, v8::ConstructorBehavior::kThrow));
     }
 
     for (std::unordered_map<std::string, LibraryValue>::iterator it = m_Values.begin(); 

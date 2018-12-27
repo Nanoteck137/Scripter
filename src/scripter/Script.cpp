@@ -106,13 +106,15 @@ v8::MaybeLocal<v8::Function> Script::GetFunction(const std::string& name)
             name.c_str(), 
             v8::NewStringType::kNormal).ToLocalChecked());
 
-    if(function.IsEmpty()) 
+    if(function.IsEmpty())
     {
         printf("Error - Script::GetFunction: Could not find function '%s'\n", name.c_str());
         return v8::MaybeLocal<v8::Function>();
     }
 
-    v8::Local<v8::Function> result = v8::Local<v8::Function>::Cast(function.ToLocalChecked());
+    v8::Local<v8::Value> test = function.ToLocalChecked();
+
+    v8::Local<v8::Function> result = v8::Local<v8::Function>::Cast(test);
 
     return handleScope.EscapeMaybe(v8::MaybeLocal<v8::Function>(result));
 }
