@@ -245,6 +245,8 @@ int main(int argc, const char** argv)
     {
         v8::HandleScope handleScope(isolate);
 
+        v8::TryCatch tryCatch(isolate);
+
         v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
 
         Library systemLib("system");
@@ -266,13 +268,30 @@ int main(int argc, const char** argv)
         Script script(engine, global);
         script.Enable();
 
-        std::string moduleSource = ReadFile("test.js");
+        v8::Local<v8::ObjectTemplate> otherGlobal = v8::ObjectTemplate::New(isolate);
 
-        v8::TryCatch tryCatch(isolate);
+        Script otherScript(engine, otherGlobal);
+        otherScript.Enable();
 
-        std::string jsSource = ReadFile("test2.js");
+        std::string otherScriptSource = ReadFile("test3.js");
 
-        script.CompileAndRun(jsSource);
+        otherScript.CompileAndRun(otherScriptSource);
+
+        auto func = otherScript.GetContext()->Global()->Get(v8::String::NewFromUtf8(isolate, "test", v8::NewStringType::kNormal).ToLocalChecked());
+        engine->PrintValue(func);
+        //engine->PrintObject(otherScript.GetContext(), otherScript.GetContext()->Global());
+        //engine->PrintObject(otherScript.GetContext(), script.GetContext()->Global());
+
+        otherScript.Disable();
+
+        std::string scriptSource = ReadFile("test2.js");
+
+        engine->PrintValue(func);
+
+        auto globalObj = script.GetContext()->Global();
+        globalObj->Set(v8::String::NewFromUtf8(isolate, "woow", v8::NewStringType::kNormal).ToLocalChecked(), func);
+
+        script.CompileAndRun(scriptSource);
 
         script.Disable();
     }
