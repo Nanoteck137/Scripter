@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <linux/limits.h>
 
 #include <scripter/Engine.h>
 #include <scripter/Library.h>
@@ -282,7 +283,22 @@ int main(int argc, const char** argv)
         script.CompileAndRun(scriptSource);
 
         auto function = script.GetFunction("main").ToLocalChecked();
-        function->Call(v8::Null(isolate), 0, {});
+
+        char fullScriptPath[PATH_MAX] = {};
+        realpath("script/test.js", fullScriptPath);
+        int length = strlen(fullScriptPath);
+        strcpy(fullScriptPath + length, "/test.js");
+
+        v8::Local<v8::Value> args[] = {
+            v8::String::NewFromUtf8(isolate, fullScriptPath,
+                                    v8::NewStringType::kNormal)
+                .ToLocalChecked(),
+        };
+
+        v8::Local<v8::Array> array = v8::Array::New(isolate, args, 2);
+        v8::Local<v8::Value> funcArgs[] = {array};
+
+        function->Call(v8::Null(isolate), 1, funcArgs);
 
         script.Disable();
     }
