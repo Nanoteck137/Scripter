@@ -3,84 +3,84 @@
  *
  * Copyright (c) 2018 Nanoteck137
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
- * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <scripter/Engine.h>
-#include <scripter/Script.h>
 #include <scripter/Library.h>
+#include <scripter/Script.h>
 
 /* TODO(patrik):
     System Library - File, Time?, SystemInfo?
 */
 
-#define JSFUNC(name) void JSLib_##name(const v8::FunctionCallbackInfo<v8::Value>& args)
+#define JSFUNC(name)                                                           \
+    void JSLib_##name(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 void JSPrint(const v8::FunctionCallbackInfo<v8::Value>& args, bool newline)
 {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope handleScope(isolate);
 
-    if(args.Length() > 0) {
+    if (args.Length() > 0)
+    {
         std::string result;
 
-        for(int i = 0; i < args.Length(); i++) 
+        for (int i = 0; i < args.Length(); i++)
         {
             v8::String::Utf8Value str(isolate, args[i]);
             result.append(*str);
 
-            if(i != args.Length() - 1)
+            if (i != args.Length() - 1)
                 result.append(1, ' ');
         }
 
-        if(newline)
+        if (newline)
             result.append(1, '\n');
 
         printf("%s", result.c_str());
-    } else {
-        if(newline)
+    }
+    else
+    {
+        if (newline)
             printf("\n");
     }
 }
 
-JSFUNC(print)
-{
-    JSPrint(args, false);
-}
+JSFUNC(print) { JSPrint(args, false); }
 
-JSFUNC(println)
-{
-    JSPrint(args, true);
-}
+JSFUNC(println) { JSPrint(args, true); }
 
-#define JS_CHECK_ARGS_LENGTH(x) \
-    if(args.Length() != x) { \
-        engine->ThrowException("%s: Needs %d argument(s)", __FUNCTION__, x); \
-        return; \
+#define JS_CHECK_ARGS_LENGTH(x)                                                \
+    if (args.Length() != x)                                                    \
+    {                                                                          \
+        engine->ThrowException("%s: Needs %d argument(s)", __FUNCTION__, x);   \
+        return;                                                                \
     }
 
 #define JS_TYPE_UNDEFINED Undefined
@@ -138,16 +138,18 @@ JSFUNC(println)
 #define JS_TYPE_WEB_ASSEMBLY_COMPILED_MODULE WebAssemblyCompiledModule
 #define JS_TYPE_MODULE_NAMESPACE_OBJECT ModuleNamespaceObject
 
-#define _JS_CHECK_ARG(type, x) \
-    if(!args[x]->Is##type()) { \
-        engine->ThrowException("%s: Needs %d argument to be %s", __FUNCTION__, x, #type); \
-        return; \
+#define _JS_CHECK_ARG(type, x)                                                 \
+    if (!args[x]->Is##type())                                                  \
+    {                                                                          \
+        engine->ThrowException("%s: Needs %d argument to be %s", __FUNCTION__, \
+                               x, #type);                                      \
+        return;                                                                \
     }
 
 #define JS_CHECK_ARG(type, x) _JS_CHECK_ARG(type, x)
 
-#define JS_FUNC_START() \
-    v8::Isolate* isolate = v8::Isolate::GetCurrent(); \
+#define JS_FUNC_START()                                                        \
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();                          \
     Engine* engine = (Engine*)isolate->GetData(0);
 
 JSFUNC(open)
@@ -161,15 +163,16 @@ JSFUNC(open)
     JS_CHECK_ARG(JS_TYPE_STRING, 0);
     JS_CHECK_ARG(JS_TYPE_INT32, 1);
 
-    v8::Local<v8::String> str = args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+    v8::Local<v8::String> str =
+        args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
     v8::String::Utf8Value strValue(isolate, str);
-    
+
     const char* file = *strValue;
     int flags = args[1]->Int32Value(isolate->GetCurrentContext()).ToChecked();
 
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int result = open(file, flags, mode);
-    if(result == -1) 
+    if (result == -1)
     {
         printf("Error open: %s\n", strerror(errno));
     }
@@ -177,7 +180,7 @@ JSFUNC(open)
     args.GetReturnValue().Set(result);
 }
 
-JSFUNC(write) 
+JSFUNC(write)
 {
     JS_FUNC_START();
 
@@ -189,14 +192,15 @@ JSFUNC(write)
     JS_CHECK_ARG(JS_TYPE_STRING, 1);
 
     int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
-    v8::Local<v8::String> str = args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+    v8::Local<v8::String> str =
+        args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
 
     v8::String::Utf8Value strValue(isolate, str);
 
     const char* buffer = *strValue;
     int result = write(fd, buffer, strValue.length());
 
-    if(result == -1)
+    if (result == -1)
     {
         printf("Error: %s\n", strerror(errno));
     }
@@ -217,7 +221,7 @@ JSFUNC(close)
     close(fd);
 }
 
-std::string ReadFile(const std::string& filename) 
+std::string ReadFile(const std::string& filename)
 {
     FILE* file = fopen(filename.c_str(), "rt");
 
@@ -253,17 +257,23 @@ int main(int argc, const char** argv)
         systemLib.RegisterFunction("print", JSLib_print);
         systemLib.RegisterFunction("println", JSLib_println);
 
-        systemLib.RegisterValueInt32("FILE_READ_ONLY", O_RDONLY, LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_WRITE_ONLY", O_WRONLY, LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_READ_WRITE", O_RDWR, LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_CREATE", O_CREAT, LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_TRUNCATE", O_TRUNC, LIB_VALUE_ATTRIBUTE_READ_ONLY);
+        systemLib.RegisterValueInt32("FILE_READ_ONLY", O_RDONLY,
+                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
+        systemLib.RegisterValueInt32("FILE_WRITE_ONLY", O_WRONLY,
+                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
+        systemLib.RegisterValueInt32("FILE_READ_WRITE", O_RDWR,
+                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
+        systemLib.RegisterValueInt32("FILE_CREATE", O_CREAT,
+                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
+        systemLib.RegisterValueInt32("FILE_TRUNCATE", O_TRUNC,
+                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
 
         systemLib.RegisterFunction("open", JSLib_open);
         systemLib.RegisterFunction("write", JSLib_write);
         systemLib.RegisterFunction("close", JSLib_close);
 
-        global->Set(isolate, systemLib.GetName().c_str(), systemLib.GenerateObject(engine));
+        global->Set(isolate, systemLib.GetName().c_str(),
+                    systemLib.GenerateObject(engine));
 
         Script script(engine, global);
         script.Enable();

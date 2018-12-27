@@ -47,7 +47,4 @@
         "algorithm": "cpp"
     },
 
-    "javascript.format.enable": false,
-    "clang-format.language.javascript.enable": false
-
 }
