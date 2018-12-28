@@ -33,31 +33,35 @@ namespace v8 {
 
 #include <v8.h>
 
-class Engine
-{
-private:
-    static std::unique_ptr<v8::Platform> s_Platform;
+namespace scripter {
 
-private:
-    v8::Isolate* m_Isolate;
-    v8::Isolate::CreateParams m_IsolateCreateParams;
+    class Engine
+    {
+    private:
+        static std::unique_ptr<v8::Platform> s_Platform;
 
-public:
-    Engine();
-    ~Engine();
+    private:
+        v8::Isolate* m_Isolate;
+        v8::Isolate::CreateParams m_IsolateCreateParams;
 
-    void StartIsolate();
-    void EndIsolate();
+    public:
+        Engine();
+        ~Engine();
 
-    void ThrowException(const char* format, ...);
+        void StartIsolate();
+        void EndIsolate();
 
-    void PrintObject(v8::Local<v8::Context> context,
-                     v8::Local<v8::Object> object);
-    void PrintValue(v8::Local<v8::Value> value);
+        void ThrowException(const char* format, ...);
 
-    v8::Isolate* GetIsolate() const { return m_Isolate; }
+        void PrintObject(v8::Local<v8::Context> context,
+                         v8::Local<v8::Object> object);
+        void PrintValue(v8::Local<v8::Value> value);
 
-public:
-    static void InitalizeV8(const char* execPath);
-    static void DeinitalizeV8();
-};
+        v8::Isolate* GetIsolate() const { return m_Isolate; }
+
+    public:
+        static void InitalizeV8(const char* execPath);
+        static void DeinitalizeV8();
+    };
+
+} // namespace scripter

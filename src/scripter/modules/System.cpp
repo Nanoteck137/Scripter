@@ -57,12 +57,16 @@ JSFUNC(print) { JSPrint(args, false); }
 
 JSFUNC(println) { JSPrint(args, true); }
 
-System::System(Engine* engine) : Module(engine)
-{
-    m_Functions["print"] = JSLib_print;
-    m_Functions["println"] = JSLib_println;
-}
+namespace scripter { namespace modules {
 
-System::~System() {}
+    System::System(Engine* engine) : Module(engine)
+    {
+        m_Functions["print"] = JSLib_print;
+        m_Functions["println"] = JSLib_println;
+    }
 
-std::string System::GetPackageName() { return "system"; }
+    System::~System() {}
+
+    std::string System::GetPackageName() { return "system"; }
+
+}} // namespace scripter::modules

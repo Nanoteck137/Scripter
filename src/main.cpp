@@ -33,7 +33,6 @@
 #include <linux/limits.h>
 
 #include <scripter/Engine.h>
-#include <scripter/Library.h>
 #include <scripter/Script.h>
 
 #include <scripter/modules/System.h>
@@ -127,6 +126,8 @@ std::string ReadFile(const std::string& filename)
     return result;
 }
 
+using namespace scripter;
+
 int main(int argc, const char** argv)
 {
     Engine::InitalizeV8(argv[0]);
@@ -141,31 +142,7 @@ int main(int argc, const char** argv)
 
         v8::TryCatch tryCatch(isolate);
 
-        v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
-
-        Library systemLib("system");
-        //systemLib.RegisterFunction("print", JSLib_print);
-        //systemLib.RegisterFunction("println", JSLib_println);
-
-        systemLib.RegisterValueInt32("FILE_READ_ONLY", O_RDONLY,
-                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_WRITE_ONLY", O_WRONLY,
-                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_READ_WRITE", O_RDWR,
-                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_CREATE", O_CREAT,
-                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
-        systemLib.RegisterValueInt32("FILE_TRUNCATE", O_TRUNC,
-                                     LIB_VALUE_ATTRIBUTE_READ_ONLY);
-
-        systemLib.RegisterFunction("open", JSLib_open);
-        systemLib.RegisterFunction("write", JSLib_write);
-        systemLib.RegisterFunction("close", JSLib_close);
-
-        global->Set(isolate, systemLib.GetName().c_str(),
-                    systemLib.GenerateObject(engine));
-
-        System* systemModule = new System(engine);
+        modules::System* systemModule = new modules::System(engine);
 
         Module* modules[] = {systemModule};
 

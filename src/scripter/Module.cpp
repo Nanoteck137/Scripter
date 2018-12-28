@@ -23,23 +23,24 @@
  */
 #include "Module.h"
 
-typedef void V8JSFunction(const v8::FunctionCallbackInfo<v8::Value>&);
+namespace scripter {
 
-Module::Module(Engine* engine) : m_Engine(engine) {}
-Module::~Module() {}
+    Module::Module(Engine* engine) : m_Engine(engine) {}
+    Module::~Module() {}
 
-v8::Local<v8::ObjectTemplate> Module::GenerateObject()
-{
-    v8::Isolate* isolate = m_Engine->GetIsolate();
-    v8::EscapableHandleScope handleScope(isolate);
-
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
-    for (auto it = m_Functions.begin(); it != m_Functions.end(); it++)
+    v8::Local<v8::ObjectTemplate> Module::GenerateObject()
     {
-        // V8JSFunction* callback = it->second.target<V8JSFunction>();
-        result->Set(isolate, it->first.c_str(),
-                    v8::FunctionTemplate::New(isolate, it->second));
+        v8::Isolate* isolate = m_Engine->GetIsolate();
+        v8::EscapableHandleScope handleScope(isolate);
+
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
+        for (auto it = m_Functions.begin(); it != m_Functions.end(); it++)
+        {
+            result->Set(isolate, it->first.c_str(),
+                        v8::FunctionTemplate::New(isolate, it->second));
+        }
+
+        return handleScope.Escape(result);
     }
 
-    return handleScope.Escape(result);
-}
+} // namespace scripter

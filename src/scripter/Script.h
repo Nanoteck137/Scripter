@@ -28,22 +28,26 @@
 #include "Engine.h"
 #include "Module.h"
 
-class Script
-{
-private:
-    Engine* m_Engine;
-    v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
-        m_Context;
+namespace scripter {
 
-public:
-    Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-    ~Script();
+    class Script
+    {
+    private:
+        Engine* m_Engine;
+        v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
+            m_Context;
 
-    void Enable();
-    void Disable();
+    public:
+        Script(Engine* engine, Module* modules[], uint32_t moduleCount);
+        ~Script();
 
-    v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
-    v8::Local<v8::Context> GetContext();
+        void Enable();
+        void Disable();
 
-    v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
-};
+        v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
+        v8::Local<v8::Context> GetContext();
+
+        v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
+    };
+
+} // namespace scripter

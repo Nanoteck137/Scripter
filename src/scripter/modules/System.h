@@ -25,12 +25,16 @@
 
 #include "../Module.h"
 
-class System : public Module
-{
-private:
-public:
-    System(Engine* engine);
-    ~System();
+namespace scripter { namespace modules {
 
-    virtual std::string GetPackageName() override;
-};
+    class System : public Module
+    {
+    private:
+    public:
+        System(Engine* engine);
+        ~System();
+
+        virtual std::string GetPackageName() override;
+    };
+
+}} // namespace scripter::modules

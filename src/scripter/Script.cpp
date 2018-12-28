@@ -23,99 +23,109 @@
  */
 #include "Script.h"
 
-Script::Script(Engine* engine, Module* modules[], uint32_t moduleCount)
-    : m_Engine(engine)
-{
-    v8::Local<v8::ObjectTemplate> globals = v8::ObjectTemplate::New(engine->GetIsolate());
+namespace scripter {
 
-    for (uint32_t i = 0; i < moduleCount; i++)
+    Script::Script(Engine* engine, Module* modules[], uint32_t moduleCount)
+        : m_Engine(engine)
     {
-        globals->Set(engine->GetIsolate(), modules[i]->GetPackageName().c_str(), modules[i]->GenerateObject());
-    }
+        v8::Local<v8::ObjectTemplate> globals =
+            v8::ObjectTemplate::New(engine->GetIsolate());
 
-    v8::Local<v8::Context> context = v8::Context::New(engine->GetIsolate(), NULL, globals);
-    m_Context =
-        v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>(
+        for (uint32_t i = 0; i < moduleCount; i++)
+        {
+            globals->Set(engine->GetIsolate(),
+                         modules[i]->GetPackageName().c_str(),
+                         modules[i]->GenerateObject());
+        }
+
+        v8::Local<v8::Context> context =
+            v8::Context::New(engine->GetIsolate(), NULL, globals);
+        m_Context = v8::Persistent<v8::Context,
+                                   v8::CopyablePersistentTraits<v8::Context>>(
             engine->GetIsolate(), context);
-}
+    }
 
-Script::~Script() { m_Context.Reset(); }
+    Script::~Script() { m_Context.Reset(); }
 
-void Script::Enable() { m_Context.Get(m_Engine->GetIsolate())->Enter(); }
+    void Script::Enable() { m_Context.Get(m_Engine->GetIsolate())->Enter(); }
 
-void Script::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
+    void Script::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
 
-v8::MaybeLocal<v8::Value> Script::CompileAndRun(const std::string& code)
-{
-    v8::Isolate* isolate = m_Engine->GetIsolate();
-
-    v8::EscapableHandleScope handleScope(isolate);
-    v8::TryCatch tryCatch(isolate);
-
-    v8::Local<v8::String> source =
-        v8::String::NewFromUtf8(isolate, code.c_str(),
-                                v8::NewStringType::kNormal)
-            .ToLocalChecked();
-
-    v8::MaybeLocal<v8::Value> result;
-    v8::Local<v8::Script> script;
-    if (!v8::Script::Compile(m_Context.Get(isolate), source).ToLocal(&script))
+    v8::MaybeLocal<v8::Value> Script::CompileAndRun(const std::string& code)
     {
-        if (tryCatch.HasCaught())
+        v8::Isolate* isolate = m_Engine->GetIsolate();
+
+        v8::EscapableHandleScope handleScope(isolate);
+        v8::TryCatch tryCatch(isolate);
+
+        v8::Local<v8::String> source =
+            v8::String::NewFromUtf8(isolate, code.c_str(),
+                                    v8::NewStringType::kNormal)
+                .ToLocalChecked();
+
+        v8::MaybeLocal<v8::Value> result;
+        v8::Local<v8::Script> script;
+        if (!v8::Script::Compile(m_Context.Get(isolate), source)
+                 .ToLocal(&script))
         {
-            v8::Local<v8::Value> ex = tryCatch.Exception();
+            if (tryCatch.HasCaught())
+            {
+                v8::Local<v8::Value> ex = tryCatch.Exception();
 
-            v8::String::Utf8Value str(isolate, ex);
+                v8::String::Utf8Value str(isolate, ex);
 
-            printf("Exception %s\n", *str);
+                printf("Exception %s\n", *str);
+            }
         }
-    }
-    else
-    {
-        result = script->Run(m_Context.Get(isolate));
-        if (tryCatch.HasCaught())
+        else
         {
-            v8::Local<v8::Value> ex = tryCatch.Exception();
+            result = script->Run(m_Context.Get(isolate));
+            if (tryCatch.HasCaught())
+            {
+                v8::Local<v8::Value> ex = tryCatch.Exception();
 
-            v8::String::Utf8Value str(isolate, ex);
+                v8::String::Utf8Value str(isolate, ex);
 
-            printf("Exception %s\n", *str);
+                printf("Exception %s\n", *str);
+            }
         }
+
+        return handleScope.EscapeMaybe(result);
     }
 
-    return handleScope.EscapeMaybe(result);
-}
-
-v8::Local<v8::Context> Script::GetContext()
-{
-    v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
-
-    return handleScope.Escape(m_Context.Get(m_Engine->GetIsolate()));
-}
-
-v8::MaybeLocal<v8::Function> Script::GetFunction(const std::string& name)
-{
-    v8::Isolate* isolate = m_Engine->GetIsolate();
-
-    v8::EscapableHandleScope handleScope(isolate);
-
-    v8::Local<v8::Context> context = m_Context.Get(isolate);
-
-    v8::MaybeLocal<v8::Value> function = context->Global()->Get(
-        context, v8::String::NewFromUtf8(isolate, name.c_str(),
-                                         v8::NewStringType::kNormal)
-                     .ToLocalChecked());
-
-    if (function.IsEmpty())
+    v8::Local<v8::Context> Script::GetContext()
     {
-        printf("Error - Script::GetFunction: Could not find function '%s'\n",
-               name.c_str());
-        return v8::MaybeLocal<v8::Function>();
+        v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
+
+        return handleScope.Escape(m_Context.Get(m_Engine->GetIsolate()));
     }
 
-    v8::Local<v8::Value> test = function.ToLocalChecked();
+    v8::MaybeLocal<v8::Function> Script::GetFunction(const std::string& name)
+    {
+        v8::Isolate* isolate = m_Engine->GetIsolate();
 
-    v8::Local<v8::Function> result = v8::Local<v8::Function>::Cast(test);
+        v8::EscapableHandleScope handleScope(isolate);
 
-    return handleScope.EscapeMaybe(v8::MaybeLocal<v8::Function>(result));
-}
+        v8::Local<v8::Context> context = m_Context.Get(isolate);
+
+        v8::MaybeLocal<v8::Value> function = context->Global()->Get(
+            context, v8::String::NewFromUtf8(isolate, name.c_str(),
+                                             v8::NewStringType::kNormal)
+                         .ToLocalChecked());
+
+        if (function.IsEmpty())
+        {
+            printf(
+                "Error - Script::GetFunction: Could not find function '%s'\n",
+                name.c_str());
+            return v8::MaybeLocal<v8::Function>();
+        }
+
+        v8::Local<v8::Value> test = function.ToLocalChecked();
+
+        v8::Local<v8::Function> result = v8::Local<v8::Function>::Cast(test);
+
+        return handleScope.EscapeMaybe(v8::MaybeLocal<v8::Function>(result));
+    }
+    
+} // namespace scripter

@@ -108,24 +108,28 @@
 
 #define JS_FUNC_START()                                                        \
     v8::Isolate* isolate = v8::Isolate::GetCurrent();                          \
-    Engine* engine = (Engine*)isolate->GetData(0);
+    scripter::Engine* engine = (scripter::Engine*)isolate->GetData(0);
 
-class Module
-{
-public:
-    friend class Script;
+namespace scripter {
 
-protected:
-    Engine* m_Engine;
-    std::unordered_map<std::string, v8::FunctionCallback> m_Functions;
+    class Module
+    {
+    public:
+        friend class Script;
 
-protected:
-    Module(Engine* engine);
-    virtual ~Module();
+    protected:
+        Engine* m_Engine;
+        std::unordered_map<std::string, v8::FunctionCallback> m_Functions;
 
-private:
-    v8::Local<v8::ObjectTemplate> GenerateObject();
+    protected:
+        Module(Engine* engine);
+        virtual ~Module();
 
-public:
-    virtual std::string GetPackageName() = 0;
-};
+    private:
+        v8::Local<v8::ObjectTemplate> GenerateObject();
+
+    public:
+        virtual std::string GetPackageName() = 0;
+    };
+
+} // namespace scripter
