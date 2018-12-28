@@ -32,6 +32,9 @@
 #include <unistd.h>
 #include <linux/limits.h>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <scripter/Engine.h>
 #include <scripter/Script.h>
 
@@ -130,6 +133,10 @@ using namespace scripter;
 
 int main(int argc, const char** argv)
 {
+    auto console = spdlog::stderr_color_mt("console");
+
+    console->error("Hello World");
+
     Engine::InitalizeV8(argv[0]);
 
     Engine* engine = new Engine();
