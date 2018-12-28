@@ -12,5 +12,5 @@ function main(args) {
 
     system.close(file);*/
 
-    system.test();
+    system.println("Hello World");
 }
