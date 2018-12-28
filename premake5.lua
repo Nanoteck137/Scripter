@@ -15,7 +15,7 @@ project "Scripter"
   filter "system:linux"
     toolset "clang"
     
-    includedirs { "vendor/v8/include" }
+    includedirs { "vendor/v8/include", "src/scripter/" }
     libdirs { "vendor/v8/libs" }
     
     links { "v8_monolith", "pthread" }

@@ -23,13 +23,17 @@
  */
 #include "Script.h"
 
-#include "Engine.h"
-
-Script::Script(Engine* engine, const v8::Local<v8::ObjectTemplate>& globals)
+Script::Script(Engine* engine, Module* modules[], uint32_t moduleCount)
     : m_Engine(engine)
 {
-    v8::Local<v8::Context> context =
-        v8::Context::New(engine->GetIsolate(), NULL, globals);
+    v8::Local<v8::ObjectTemplate> globals = v8::ObjectTemplate::New(engine->GetIsolate());
+
+    for (uint32_t i = 0; i < moduleCount; i++)
+    {
+        globals->Set(engine->GetIsolate(), modules[i]->GetPackageName().c_str(), modules[i]->GenerateObject());
+    }
+
+    v8::Local<v8::Context> context = v8::Context::New(engine->GetIsolate(), NULL, globals);
     m_Context =
         v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>(
             engine->GetIsolate(), context);

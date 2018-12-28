@@ -44,7 +44,11 @@
         "ratio": "cpp",
         "thread": "cpp",
         "valarray": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "atomic": "cpp",
+        "cstring": "cpp",
+        "numeric": "cpp",
+        "cinttypes": "cpp"
     },
 
 }

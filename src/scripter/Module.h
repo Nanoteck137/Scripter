@@ -23,27 +23,30 @@
  */
 #pragma once
 
+#include <string>
+#include <unordered_map>
+#include <functional>
+
 #include <v8.h>
 
 #include "Engine.h"
-#include "Module.h"
 
-class Script
+class Module
 {
-private:
+public:
+    friend class Script;
+
+protected:
     Engine* m_Engine;
-    v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
-        m_Context;
+    std::unordered_map<std::string, v8::FunctionCallback> m_Functions;
+
+protected:
+    Module(Engine* engine);
+    virtual ~Module();
+
+private:
+    v8::Local<v8::ObjectTemplate> GenerateObject();
 
 public:
-    Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-    ~Script();
-
-    void Enable();
-    void Disable();
-
-    v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
-    v8::Local<v8::Context> GetContext();
-
-    v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
+    virtual std::string GetPackageName() = 0;
 };

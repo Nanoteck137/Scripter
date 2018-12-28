@@ -21,29 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
-
-#include <v8.h>
-
-#include "Engine.h"
 #include "Module.h"
 
-class Script
+typedef void V8JSFunction(const v8::FunctionCallbackInfo<v8::Value>&);
+
+Module::Module(Engine* engine) : m_Engine(engine) {}
+Module::~Module() {}
+
+v8::Local<v8::ObjectTemplate> Module::GenerateObject()
 {
-private:
-    Engine* m_Engine;
-    v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
-        m_Context;
+    v8::Isolate* isolate = m_Engine->GetIsolate();
+    v8::EscapableHandleScope handleScope(isolate);
 
-public:
-    Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-    ~Script();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
+    for (auto it = m_Functions.begin(); it != m_Functions.end(); it++)
+    {
+        // V8JSFunction* callback = it->second.target<V8JSFunction>();
+        result->Set(isolate, it->first.c_str(),
+                    v8::FunctionTemplate::New(isolate, it->second));
+    }
 
-    void Enable();
-    void Disable();
-
-    v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
-    v8::Local<v8::Context> GetContext();
-
-    v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
-};
+    return handleScope.Escape(result);
+}

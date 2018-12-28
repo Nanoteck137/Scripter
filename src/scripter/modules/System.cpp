@@ -21,29 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "System.h"
 
-#include <v8.h>
-
-#include "Engine.h"
-#include "Module.h"
-
-class Script
+void TestFunc(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-private:
-    Engine* m_Engine;
-    v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
-        m_Context;
+    printf("Hello World\n");
+}
 
-public:
-    Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-    ~Script();
+System::System(Engine* engine) : Module(engine)
+{
+    m_Functions["test"] = TestFunc;
+}
 
-    void Enable();
-    void Disable();
+System::~System() {}
 
-    v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
-    v8::Local<v8::Context> GetContext();
-
-    v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
-};
+std::string System::GetPackageName() { return "system"; }

@@ -36,6 +36,8 @@
 #include <scripter/Library.h>
 #include <scripter/Script.h>
 
+#include <scripter/modules/System.h>
+
 /* TODO(patrik):
     System Library - File, Time?, SystemInfo?
 */
@@ -203,7 +205,7 @@ JSFUNC(write)
 
     if (result == -1)
     {
-        printf("Error: %s\n", strerror(errno));
+        engine->ThrowException("File Error: %s", strerror(errno));
     }
 
     args.GetReturnValue().Set(result);
@@ -231,8 +233,8 @@ std::string ReadFile(const std::string& filename)
     fseek(file, 0, SEEK_SET);
 
     std::string result(length, 0);
-
     fread(&result[0], 1, length, file);
+
     fclose(file);
 
     return result;
@@ -276,7 +278,11 @@ int main(int argc, const char** argv)
         global->Set(isolate, systemLib.GetName().c_str(),
                     systemLib.GenerateObject(engine));
 
-        Script script(engine, global);
+        System* systemModule = new System(engine);
+
+        Module* modules[] = {systemModule};
+
+        Script script(engine, modules, 1);
         script.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
@@ -295,7 +301,7 @@ int main(int argc, const char** argv)
                 .ToLocalChecked(),
         };
 
-        v8::Local<v8::Array> array = v8::Array::New(isolate, args, 2);
+        v8::Local<v8::Array> array = v8::Array::New(isolate, args, 1);
         v8::Local<v8::Value> funcArgs[] = {array};
 
         function->Call(v8::Null(isolate), 1, funcArgs);

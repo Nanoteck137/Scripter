@@ -23,27 +23,14 @@
  */
 #pragma once
 
-#include <v8.h>
+#include "../Module.h"
 
-#include "Engine.h"
-#include "Module.h"
-
-class Script
+class System : public Module
 {
 private:
-    Engine* m_Engine;
-    v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>>
-        m_Context;
-
 public:
-    Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-    ~Script();
+    System(Engine* engine);
+    ~System();
 
-    void Enable();
-    void Disable();
-
-    v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
-    v8::Local<v8::Context> GetContext();
-
-    v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
+    virtual std::string GetPackageName() override;
 };
