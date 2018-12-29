@@ -44,6 +44,8 @@ namespace scripter {
         void Enable();
         void Disable();
 
+        void ImportModule(Module* module);
+
         v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
         v8::Local<v8::Context> GetContext();
 

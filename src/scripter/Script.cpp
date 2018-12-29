@@ -23,26 +23,64 @@
  */
 #include "Script.h"
 
+#include "NativeModuleImporter.h"
+
 namespace scripter {
+
+    JSFUNC(importModule)
+    {
+        JS_FUNC_START();
+        v8::HandleScope handleScope(isolate);
+
+        JS_CHECK_ARGS_LENGTH(1);
+
+        JS_CHECK_ARG(JS_TYPE_STRING, 0);
+
+        v8::String::Utf8Value moduleNameStr(isolate,
+                                            args[0]->ToString(isolate));
+        std::string moduleName = std::string(*moduleNameStr);
+
+        std::string modulePath = "./bin/Debug/";
+        modulePath.append("lib");
+        modulePath.append(moduleName);
+        modulePath.append(".so");
+
+        Module* module = NativeModuleImporter::Get()->ImportModule(modulePath);
+
+        v8::Local<v8::External> data =
+            v8::Local<v8::External>::Cast(args.Data());
+        Script* script = (Script*)data->Value();
+
+        script->ImportModule(module);
+    }
 
     Script::Script(Engine* engine, Module* modules[], uint32_t moduleCount)
         : m_Engine(engine)
     {
+        v8::Isolate* isolate = engine->GetIsolate();
+
+        v8::HandleScope scope(isolate);
+
         v8::Local<v8::ObjectTemplate> globals =
-            v8::ObjectTemplate::New(engine->GetIsolate());
+            v8::ObjectTemplate::New(isolate);
 
         for (uint32_t i = 0; i < moduleCount; i++)
         {
-            globals->Set(engine->GetIsolate(),
-                         modules[i]->GetPackageName().c_str(),
+            globals->Set(isolate, modules[i]->GetPackageName().c_str(),
                          modules[i]->GenerateObject());
         }
 
+        v8::Local<v8::External> data = v8::External::New(isolate, this);
+
+        globals->Set(
+            isolate, "importModule",
+            v8::FunctionTemplate::New(isolate, JSFunc_importModule, data));
+
         v8::Local<v8::Context> context =
-            v8::Context::New(engine->GetIsolate(), NULL, globals);
+            v8::Context::New(isolate, NULL, globals);
         m_Context = v8::Persistent<v8::Context,
                                    v8::CopyablePersistentTraits<v8::Context>>(
-            engine->GetIsolate(), context);
+            isolate, context);
     }
 
     Script::~Script() { m_Context.Reset(); }
@@ -51,6 +89,8 @@ namespace scripter {
 
     void Script::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
 
+    void Script::ImportModule(Module* module) {}
+
     v8::MaybeLocal<v8::Value> Script::CompileAndRun(const std::string& code)
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
@@ -58,10 +98,7 @@ namespace scripter {
         v8::EscapableHandleScope handleScope(isolate);
         v8::TryCatch tryCatch(isolate);
 
-        v8::Local<v8::String> source =
-            v8::String::NewFromUtf8(isolate, code.c_str(),
-                                    v8::NewStringType::kNormal)
-                .ToLocalChecked();
+        v8::Local<v8::String> source = m_Engine->CreateString(code);
 
         v8::MaybeLocal<v8::Value> result;
         v8::Local<v8::Script> script;
@@ -108,10 +145,8 @@ namespace scripter {
 
         v8::Local<v8::Context> context = m_Context.Get(isolate);
 
-        v8::MaybeLocal<v8::Value> function = context->Global()->Get(
-            context, v8::String::NewFromUtf8(isolate, name.c_str(),
-                                             v8::NewStringType::kNormal)
-                         .ToLocalChecked());
+        v8::MaybeLocal<v8::Value> function =
+            context->Global()->Get(context, m_Engine->CreateString(name));
 
         if (function.IsEmpty())
         {

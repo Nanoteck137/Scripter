@@ -21,52 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "System.h"
+#pragma once
 
-void JSPrint(const v8::FunctionCallbackInfo<v8::Value>& args, bool newline)
-{
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::HandleScope handleScope(isolate);
+#include <string>
 
-    if (args.Length() > 0)
+#include "Module.h"
+
+namespace scripter {
+
+    class NativeModuleImporter
     {
-        std::string result;
+    public:
+        friend class Engine;
 
-        for (int i = 0; i < args.Length(); i++)
-        {
-            v8::String::Utf8Value str(isolate, args[i]);
-            result.append(*str);
+    private:
+        static NativeModuleImporter* s_Instance;
+        typedef Module* (*CreateModuleFunc)(Engine*);
 
-            if (i != args.Length() - 1)
-                result.append(1, ' ');
-        }
+        std::unordered_map<std::string, void*> m_Handles;
 
-        if (newline)
-            result.append(1, '\n');
+    private:
+        NativeModuleImporter();
 
-        printf("%s", result.c_str());
-    }
-    else
-    {
-        if (newline)
-            printf("\n");
-    }
-}
+    public:
+        ~NativeModuleImporter();
 
-JSFUNC(print) { JSPrint(args, false); }
+        Module* ImportModule(const std::string& modulePath);
 
-JSFUNC(println) { JSPrint(args, true); }
+    public:
+        static NativeModuleImporter* Get();
 
-namespace scripter { namespace modules {
+    private:
+        static void Initalize();
+        static void Deinitalize();
+    };
 
-    System::System(Engine* engine) : Module(engine)
-    {
-        m_Functions["print"] = JSFunc_print;
-        m_Functions["println"] = JSFunc_println;
-    }
-
-    System::~System() {}
-
-    std::string System::GetPackageName() { return "system"; }
-
-}} // namespace scripter::modules
+} // namespace scripter

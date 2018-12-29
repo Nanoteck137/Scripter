@@ -27,6 +27,8 @@
 #include <libplatform/libplatform.h>
 #include <v8.h>
 
+#include "NativeModuleImporter.h"
+
 namespace scripter {
 
     std::unique_ptr<v8::Platform> Engine::s_Platform;
@@ -88,6 +90,19 @@ namespace scripter {
         printf("------------\n");
     }
 
+    v8::Local<v8::String> Engine::CreateString(const std::string& value)
+    {
+        v8::EscapableHandleScope handleScope(m_Isolate);
+        return CreateString(value.c_str());
+    }
+
+    v8::Local<v8::String> Engine::CreateString(const char* value)
+    {
+        return v8::String::NewFromUtf8(m_Isolate, value,
+                                       v8::NewStringType::kNormal)
+            .ToLocalChecked();
+    }
+
     void Engine::PrintValue(v8::Local<v8::Value> value)
     {
         printf("-- VALUE --\n");
@@ -107,12 +122,19 @@ namespace scripter {
         s_Platform = v8::platform::NewDefaultPlatform();
         v8::V8::InitializePlatform(s_Platform.get());
         v8::V8::Initialize();
+
+        // Initialize NativeModuleImporter
+        NativeModuleImporter::Initalize();
     }
 
     void Engine::DeinitalizeV8()
     {
+        // Deinitalize V8
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
+
+        // Deinitalize NativeModuleImporter
+        NativeModuleImporter::Deinitalize();
     }
 
 } // namespace scripter

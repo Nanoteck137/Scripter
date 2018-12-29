@@ -11,7 +11,7 @@ class TestModule : public Module
 public:
     TestModule(Engine* engine) : Module(engine)
     {
-        m_Functions["wow"] = JSLib_test;
+        m_Functions["wow"] = JSFunc_test;
     }
     ~TestModule() {}
 

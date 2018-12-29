@@ -32,7 +32,7 @@
 #include "Engine.h"
 
 #define JSFUNC(name)                                                           \
-    void JSLib_##name(const v8::FunctionCallbackInfo<v8::Value>& args)
+    void JSFunc_##name(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 #define JS_CHECK_ARGS_LENGTH(x)                                                \
     if (args.Length() != x)                                                    \
@@ -123,12 +123,13 @@ namespace scripter {
 
     protected:
         Module(Engine* engine);
-        virtual ~Module();
 
     private:
         v8::Local<v8::ObjectTemplate> GenerateObject();
 
     public:
+        virtual ~Module();
+
         virtual std::string GetPackageName() = 0;
     };
 

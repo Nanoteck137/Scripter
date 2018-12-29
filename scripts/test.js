@@ -14,4 +14,7 @@ function main(args) {
 
     test.wow();
     system.println("Hello World");
+    //importModule("test");
+
+    system.println(wow.lol);
 }

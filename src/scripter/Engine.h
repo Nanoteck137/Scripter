@@ -57,6 +57,9 @@ namespace scripter {
                          v8::Local<v8::Object> object);
         void PrintValue(v8::Local<v8::Value> value);
 
+        v8::Local<v8::String> CreateString(const std::string& value);
+        v8::Local<v8::String> CreateString(const char* value);
+
         v8::Isolate* GetIsolate() const { return m_Isolate; }
 
     public:
