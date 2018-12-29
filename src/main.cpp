@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Nanoteck137
+ * Copyright (c) 2018 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -135,7 +135,10 @@ int main(int argc, const char** argv)
 {
     auto console = spdlog::stderr_color_mt("console");
 
+    console->set_pattern("[%Y-%m-%d] (%H:%M:%S) - [%^%l%$]: %v");
+    console->warn("Wow");
     console->error("Hello World");
+    console->critical("WooW");
 
     Engine::InitalizeV8(argv[0]);
 

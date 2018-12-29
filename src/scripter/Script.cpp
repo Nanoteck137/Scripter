@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Nanoteck137
+ * Copyright (c) 2018 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -127,5 +127,5 @@ namespace scripter {
 
         return handleScope.EscapeMaybe(v8::MaybeLocal<v8::Function>(result));
     }
-    
+
 } // namespace scripter
