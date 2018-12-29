@@ -1,4 +1,3 @@
 bin/
 Makefile
-Scripter.make
-TestProgram.make
+*.make
