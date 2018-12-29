@@ -150,7 +150,7 @@ int main(int argc, const char** argv)
 
         v8::TryCatch tryCatch(isolate);
 
-        void* handle = dlopen("./bin/Debug/libTest.so", RTLD_NOW);
+        /*void* handle = dlopen("./bin/Debug/libTest.so", RTLD_NOW);
         if (!handle)
         {
             console->error("Could not load libTest.so: {0}", dlerror());
@@ -164,13 +164,13 @@ int main(int argc, const char** argv)
             console->error("Could not load function 'Test'");
         }
 
-        Module* module = func(engine);
+        Module* module = func(engine);*/
 
         modules::System* systemModule = new modules::System(engine);
 
-        Module* modules[] = {systemModule, module};
+        Module* modules[] = {systemModule};
 
-        Script script(engine, modules, 2);
+        Script script(engine, modules, 1);
         script.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
@@ -194,7 +194,7 @@ int main(int argc, const char** argv)
 
         function->Call(v8::Null(isolate), 1, funcArgs);
 
-        dlclose(handle);
+        // dlclose(handle);
 
         script.Disable();
     }

@@ -40,12 +40,15 @@ namespace scripter {
                                             args[0]->ToString(isolate));
         std::string moduleName = std::string(*moduleNameStr);
 
-        std::string modulePath = "./bin/Debug/";
-        modulePath.append("lib");
-        modulePath.append(moduleName);
-        modulePath.append(".so");
+        Module* module =
+            NativeModuleImporter::Get()->ImportModule(engine, moduleName);
 
-        Module* module = NativeModuleImporter::Get()->ImportModule(modulePath);
+        if (!module)
+        {
+            engine->ThrowException("Could not load module %s\n",
+                                   moduleName.c_str());
+            return;
+        }
 
         v8::Local<v8::External> data =
             v8::Local<v8::External>::Cast(args.Data());
@@ -89,7 +92,17 @@ namespace scripter {
 
     void Script::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
 
-    void Script::ImportModule(Module* module) {}
+    void Script::ImportModule(Module* module)
+    {
+        // TODO: Check if module already loaded
+        v8::Local<v8::Context> context = GetContext();
+        v8::Local<v8::Object> globals =
+            v8::Local<v8::Object>::Cast(context->Global()->GetPrototype());
+
+        v8::Local<v8::ObjectTemplate> objTemplate = module->GenerateObject();
+        globals->Set(m_Engine->CreateString(module->GetPackageName()),
+                     objTemplate->NewInstance(context).ToLocalChecked());
+    }
 
     v8::MaybeLocal<v8::Value> Script::CompileAndRun(const std::string& code)
     {

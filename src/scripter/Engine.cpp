@@ -92,7 +92,6 @@ namespace scripter {
 
     v8::Local<v8::String> Engine::CreateString(const std::string& value)
     {
-        v8::EscapableHandleScope handleScope(m_Isolate);
         return CreateString(value.c_str());
     }
 

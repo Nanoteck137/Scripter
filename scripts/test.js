@@ -12,9 +12,10 @@ function main(args) {
 
     system.close(file);*/
 
-    test.wow();
+    //test.wow();
     system.println("Hello World");
-    //importModule("test");
+    importModule("Test");
 
-    system.println(wow.lol);
+    test.wow();
+
 }

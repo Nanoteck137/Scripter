@@ -48,7 +48,9 @@
         "atomic": "cpp",
         "cstring": "cpp",
         "numeric": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "hash_map": "cpp",
+        "codecvt": "cpp"
     },
 
 }
