@@ -12,5 +12,6 @@ function main(args) {
 
     system.close(file);*/
 
+    test.wow();
     system.println("Hello World");
 }

@@ -40,9 +40,7 @@
 
 #include <scripter/modules/System.h>
 
-/* TODO(patrik):
-    System Library - File, Time?, SystemInfo?
-*/
+#include <dlfcn.h>
 
 JSFUNC(open)
 {
@@ -152,11 +150,27 @@ int main(int argc, const char** argv)
 
         v8::TryCatch tryCatch(isolate);
 
+        void* handle = dlopen("./bin/Debug/libTest.so", RTLD_NOW);
+        if (!handle)
+        {
+            console->error("Could not load libTest.so: {0}", dlerror());
+        }
+
+        typedef Module* (*CreateModuleFunc)(Engine*);
+
+        CreateModuleFunc func = (CreateModuleFunc)dlsym(handle, "CreateModule");
+        if (!func)
+        {
+            console->error("Could not load function 'Test'");
+        }
+
+        Module* module = func(engine);
+
         modules::System* systemModule = new modules::System(engine);
 
-        Module* modules[] = {systemModule};
+        Module* modules[] = {systemModule, module};
 
-        Script script(engine, modules, 1);
+        Script script(engine, modules, 2);
         script.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
@@ -179,6 +193,8 @@ int main(int argc, const char** argv)
         v8::Local<v8::Value> funcArgs[] = {array};
 
         function->Call(v8::Null(isolate), 1, funcArgs);
+
+        dlclose(handle);
 
         script.Disable();
     }

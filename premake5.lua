@@ -44,7 +44,32 @@ project "TestProgram"
   filter "system:linux"
     toolset "clang"
     includedirs { "src/", "vendor/v8/include", "vendor/spdlog/include" }
-    links { "Scripter" }
+    links { "Scripter", "dl" }
+    buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
+
+  filter "configurations:Debug"
+    defines { "DEBUG" }
+    symbols "On"
+
+  filter "configurations:Release"
+    defines { "NDEBUG" }
+    optimize "On"
+
+project "Test"
+  kind "SharedLib"
+  
+  language "C++"
+  cppdialect "C++17"
+
+  targetdir "bin/%{cfg.buildcfg}"
+  objdir "bin/%{cfg.buildcfg}/obj/%{prj.name}"
+
+  files { "src/test/**.h", "src/test/**.cpp" }
+
+  filter "system:linux"
+    toolset "clang"
+    
+    includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
 
   filter "configurations:Debug"
