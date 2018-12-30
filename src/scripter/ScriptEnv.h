@@ -30,7 +30,7 @@
 
 namespace scripter {
 
-    class Script
+    class ScriptEnv
     {
     private:
         Engine* m_Engine;
@@ -38,8 +38,8 @@ namespace scripter {
             m_Context;
 
     public:
-        Script(Engine* engine, Module* modules[], uint32_t moduleCount);
-        ~Script();
+        ScriptEnv(Engine* engine, Module* modules[], uint32_t moduleCount);
+        ~ScriptEnv();
 
         void Enable();
         void Disable();

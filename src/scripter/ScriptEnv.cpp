@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "Script.h"
+#include "ScriptEnv.h"
 
 #include "NativeModuleImporter.h"
 
@@ -52,12 +52,13 @@ namespace scripter {
 
         v8::Local<v8::External> data =
             v8::Local<v8::External>::Cast(args.Data());
-        Script* script = (Script*)data->Value();
+        ScriptEnv* script = (ScriptEnv*)data->Value();
 
         script->ImportModule(module);
     }
 
-    Script::Script(Engine* engine, Module* modules[], uint32_t moduleCount)
+    ScriptEnv::ScriptEnv(Engine* engine, Module* modules[],
+                         uint32_t moduleCount)
         : m_Engine(engine)
     {
         v8::Isolate* isolate = engine->GetIsolate();
@@ -86,13 +87,13 @@ namespace scripter {
             isolate, context);
     }
 
-    Script::~Script() { m_Context.Reset(); }
+    ScriptEnv::~ScriptEnv() { m_Context.Reset(); }
 
-    void Script::Enable() { m_Context.Get(m_Engine->GetIsolate())->Enter(); }
+    void ScriptEnv::Enable() { m_Context.Get(m_Engine->GetIsolate())->Enter(); }
 
-    void Script::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
+    void ScriptEnv::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
 
-    void Script::ImportModule(Module* module)
+    void ScriptEnv::ImportModule(Module* module)
     {
         // TODO: Check if module already loaded
         v8::Local<v8::Context> context = GetContext();
@@ -104,7 +105,7 @@ namespace scripter {
                      objTemplate->NewInstance(context).ToLocalChecked());
     }
 
-    v8::MaybeLocal<v8::Value> Script::CompileAndRun(const std::string& code)
+    v8::MaybeLocal<v8::Value> ScriptEnv::CompileAndRun(const std::string& code)
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
 
@@ -143,14 +144,14 @@ namespace scripter {
         return handleScope.EscapeMaybe(result);
     }
 
-    v8::Local<v8::Context> Script::GetContext()
+    v8::Local<v8::Context> ScriptEnv::GetContext()
     {
         v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
 
         return handleScope.Escape(m_Context.Get(m_Engine->GetIsolate()));
     }
 
-    v8::MaybeLocal<v8::Function> Script::GetFunction(const std::string& name)
+    v8::MaybeLocal<v8::Function> ScriptEnv::GetFunction(const std::string& name)
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
 
@@ -164,7 +165,7 @@ namespace scripter {
         if (function.IsEmpty())
         {
             printf(
-                "Error - Script::GetFunction: Could not find function '%s'\n",
+                "Error - ScriptEnv::GetFunction: Could not find function '%s'\n",
                 name.c_str());
             return v8::MaybeLocal<v8::Function>();
         }

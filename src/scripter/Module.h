@@ -115,7 +115,7 @@ namespace scripter {
     class Module
     {
     public:
-        friend class Script;
+        friend class ScriptEnv;
 
     protected:
         Engine* m_Engine;

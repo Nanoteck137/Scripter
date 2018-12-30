@@ -33,7 +33,7 @@
 
 #include <scripter/Logger.h>
 #include <scripter/Engine.h>
-#include <scripter/Script.h>
+#include <scripter/ScriptEnv.h>
 
 #include <scripter/modules/System.h>
 
@@ -143,13 +143,13 @@ int main(int argc, const char** argv)
 
         Module* modules[] = {systemModule};
 
-        Script script(engine, modules, 1);
-        script.Enable();
+        ScriptEnv env(engine, modules, 1);
+        env.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
-        script.CompileAndRun(scriptSource);
+        env.CompileAndRun(scriptSource);
 
-        auto function = script.GetFunction("main").ToLocalChecked();
+        auto function = env.GetFunction("main").ToLocalChecked();
 
         // TODO(patrik): Move this
         char fullScriptPath[PATH_MAX] = {};
@@ -164,7 +164,7 @@ int main(int argc, const char** argv)
 
         function->Call(v8::Null(isolate), 1, funcArgs);
 
-        script.Disable();
+        env.Disable();
     }
 
     engine->EndIsolate();
