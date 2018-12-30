@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 #include <scripter/Module.h>
+#include <scripter/Logger.h>
 
-JSFUNC(test) { printf("Hello World js func\n"); }
+JSFUNC(test) { MODULE_LOG_INFO("Hello World from module"); }
 
 using namespace scripter;
 

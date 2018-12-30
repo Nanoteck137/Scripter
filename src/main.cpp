@@ -127,22 +127,6 @@ using namespace scripter;
 int main(int argc, const char** argv)
 {
     Logger::Initialize();
-
-    SCRIPTER_LOG_INFO("Hello World");
-    SCRIPTER_LOG_WARNING("Hello World");
-    SCRIPTER_LOG_ERROR("Hello World");
-    SCRIPTER_LOG_CRITICAL("Hello World");
-
-    JS_LOG_INFO("Hello World");
-    JS_LOG_WARNING("Hello World");
-    JS_LOG_ERROR("Hello World");
-    JS_LOG_CRITICAL("Hello World");
-
-    MODULE_LOG_INFO("Hello World");
-    MODULE_LOG_WARNING("Hello World");
-    MODULE_LOG_ERROR("Hello World");
-    MODULE_LOG_CRITICAL("Hello World");
-
     Engine::InitializeV8(argv[0]);
 
     Engine* engine = new Engine();
