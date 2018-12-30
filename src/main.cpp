@@ -167,16 +167,13 @@ int main(int argc, const char** argv)
 
         auto function = script.GetFunction("main").ToLocalChecked();
 
+        // TODO(patrik): Move this
         char fullScriptPath[PATH_MAX] = {};
         realpath("script/test.js", fullScriptPath);
         int length = strlen(fullScriptPath);
         strcpy(fullScriptPath + length, "/test.js");
 
-        v8::Local<v8::Value> args[] = {
-            v8::String::NewFromUtf8(isolate, fullScriptPath,
-                                    v8::NewStringType::kNormal)
-                .ToLocalChecked(),
-        };
+        v8::Local<v8::Value> args[] = {engine->CreateString(fullScriptPath)};
 
         v8::Local<v8::Array> array = v8::Array::New(isolate, args, 1);
         v8::Local<v8::Value> funcArgs[] = {array};

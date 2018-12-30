@@ -62,10 +62,7 @@ namespace scripter {
         va_end(args);
 
         v8::HandleScope handleScope(m_Isolate);
-        m_Isolate->ThrowException(
-            v8::String::NewFromUtf8(m_Isolate, buffer,
-                                    v8::NewStringType::kNormal)
-                .ToLocalChecked());
+        m_Isolate->ThrowException(CreateString(buffer));
     }
 
     void Engine::PrintObject(v8::Local<v8::Context> context,
