@@ -2,6 +2,9 @@
 Scripter is a wrapper around Google's v8 javascript engine
 
 ## Platforms
-- Linux is supported
-- Win32 is not supported yet
-- MacOS maybe some time
+|  Platform  |  Status     |
+|------------|-------------|
+|  Linux     |  Supported  |
+|  Win32     |  Not yet    |
+|  MacOS     |  Maybe      |
+|  Android   |  Not yet    |
