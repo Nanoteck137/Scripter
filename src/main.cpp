@@ -36,6 +36,7 @@
 #include <scripter/ScriptEnv.h>
 
 #include <scripter/modules/System.h>
+#include <scripter/modules/Console.h>
 
 JSFUNC(open)
 {
@@ -140,10 +141,11 @@ int main(int argc, const char** argv)
         v8::TryCatch tryCatch(isolate);
 
         modules::System* systemModule = new modules::System(engine);
+        modules::Console* consoleModule = new modules::Console(engine);
 
-        Module* modules[] = {systemModule};
+        Module* modules[] = {systemModule, consoleModule};
 
-        ScriptEnv env(engine, modules, 1);
+        ScriptEnv env(engine, modules, 2);
         env.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
@@ -165,6 +167,9 @@ int main(int argc, const char** argv)
         function->Call(v8::Null(isolate), 1, funcArgs);
 
         env.Disable();
+
+        delete systemModule;
+        delete consoleModule;
     }
 
     engine->EndIsolate();

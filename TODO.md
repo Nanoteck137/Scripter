@@ -9,3 +9,10 @@
 - [ ] Add more comments around the code, and documentation
 - [ ] Rename Script to something else maybe JSEnv
 - [ ] Rework the system module, more console options
+- [ ] Console module
+    - [x] Info
+    - [x] Warning
+    - [x] Error
+    - [x] Critical
+    - [ ] Assert
+    - [ ] More?
