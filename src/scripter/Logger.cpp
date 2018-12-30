@@ -21,50 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-#pragma once
-
-namespace v8 {
-    class Platform;
-} // namespace v8
-
-#include <memory>
-#include <unordered_map>
-
-#include <v8.h>
+#include "Logger.h"
 
 namespace scripter {
 
-    class Engine
+    std::shared_ptr<spdlog::logger> Logger::s_ScripterLogger;
+    std::shared_ptr<spdlog::logger> Logger::s_JSLogger;
+    std::shared_ptr<spdlog::logger> Logger::s_ModuleLogger;
+
+    void Logger::Initialize()
     {
-    private:
-        static std::unique_ptr<v8::Platform> s_Platform;
+        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%n] [%^%l%$]: %v");
+        s_ScripterLogger = spdlog::stderr_color_mt("scripter");
+        s_JSLogger = spdlog::stderr_color_mt("javascript");
+        s_ModuleLogger = spdlog::stderr_color_mt("module");
+    }
 
-    private:
-        v8::Isolate* m_Isolate;
-        v8::Isolate::CreateParams m_IsolateCreateParams;
-
-    public:
-        Engine();
-        ~Engine();
-
-        void StartIsolate();
-        void EndIsolate();
-
-        void ThrowException(const char* format, ...);
-
-        void PrintObject(v8::Local<v8::Context> context,
-                         v8::Local<v8::Object> object);
-        void PrintValue(v8::Local<v8::Value> value);
-
-        v8::Local<v8::String> CreateString(const std::string& value);
-        v8::Local<v8::String> CreateString(const char* value);
-
-        v8::Isolate* GetIsolate() const { return m_Isolate; }
-
-    public:
-        static void InitializeV8(const char* execPath);
-        static void DeinitializeV8();
-    };
+    void Logger::Deinitialize() {}
 
 } // namespace scripter

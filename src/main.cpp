@@ -21,26 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <linux/limits.h>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-
+#include <scripter/Logger.h>
 #include <scripter/Engine.h>
 #include <scripter/Script.h>
 
 #include <scripter/modules/System.h>
-
-#include <dlfcn.h>
 
 JSFUNC(open)
 {
@@ -131,14 +126,24 @@ using namespace scripter;
 
 int main(int argc, const char** argv)
 {
-    auto console = spdlog::stderr_color_mt("console");
+    Logger::Initialize();
 
-    console->set_pattern("[%Y-%m-%d] (%H:%M:%S) - [%^%l%$]: %v");
-    console->warn("Wow");
-    console->error("Hello World");
-    console->critical("WooW");
+    SCRIPTER_LOG_INFO("Hello World");
+    SCRIPTER_LOG_WARNING("Hello World");
+    SCRIPTER_LOG_ERROR("Hello World");
+    SCRIPTER_LOG_CRITICAL("Hello World");
 
-    Engine::InitalizeV8(argv[0]);
+    JS_LOG_INFO("Hello World");
+    JS_LOG_WARNING("Hello World");
+    JS_LOG_ERROR("Hello World");
+    JS_LOG_CRITICAL("Hello World");
+
+    MODULE_LOG_INFO("Hello World");
+    MODULE_LOG_WARNING("Hello World");
+    MODULE_LOG_ERROR("Hello World");
+    MODULE_LOG_CRITICAL("Hello World");
+
+    Engine::InitializeV8(argv[0]);
 
     Engine* engine = new Engine();
 
@@ -149,22 +154,6 @@ int main(int argc, const char** argv)
         v8::HandleScope handleScope(isolate);
 
         v8::TryCatch tryCatch(isolate);
-
-        /*void* handle = dlopen("./bin/Debug/libTest.so", RTLD_NOW);
-        if (!handle)
-        {
-            console->error("Could not load libTest.so: {0}", dlerror());
-        }
-
-        typedef Module* (*CreateModuleFunc)(Engine*);
-
-        CreateModuleFunc func = (CreateModuleFunc)dlsym(handle, "CreateModule");
-        if (!func)
-        {
-            console->error("Could not load function 'Test'");
-        }
-
-        Module* module = func(engine);*/
 
         modules::System* systemModule = new modules::System(engine);
 
@@ -194,15 +183,13 @@ int main(int argc, const char** argv)
 
         function->Call(v8::Null(isolate), 1, funcArgs);
 
-        // dlclose(handle);
-
         script.Disable();
     }
 
     engine->EndIsolate();
 
     delete engine;
-    Engine::DeinitalizeV8();
+    Engine::DeinitializeV8();
 
     return 0;
 }

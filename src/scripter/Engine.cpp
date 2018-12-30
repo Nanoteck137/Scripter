@@ -112,7 +112,7 @@ namespace scripter {
         printf("-----------\n");
     }
 
-    void Engine::InitalizeV8(const char* execPath)
+    void Engine::InitializeV8(const char* execPath)
     {
         // Initialize V8.
         v8::V8::InitializeICUDefaultLocation(execPath);
@@ -123,17 +123,17 @@ namespace scripter {
         v8::V8::Initialize();
 
         // Initialize NativeModuleImporter
-        NativeModuleImporter::Initalize();
+        NativeModuleImporter::Initialize();
     }
 
-    void Engine::DeinitalizeV8()
+    void Engine::DeinitializeV8()
     {
         // Deinitalize V8
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
 
         // Deinitalize NativeModuleImporter
-        NativeModuleImporter::Deinitalize();
+        NativeModuleImporter::Deinitialize();
     }
 
 } // namespace scripter

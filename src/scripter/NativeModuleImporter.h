@@ -53,8 +53,8 @@ namespace scripter {
         static NativeModuleImporter* Get();
 
     private:
-        static void Initalize();
-        static void Deinitalize();
+        static void Initialize();
+        static void Deinitialize();
     };
 
 } // namespace scripter

@@ -23,41 +23,41 @@
  */
 #include "System.h"
 
-void JSPrint(const v8::FunctionCallbackInfo<v8::Value>& args, bool newline)
-{
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::HandleScope handleScope(isolate);
-
-    if (args.Length() > 0)
-    {
-        std::string result;
-
-        for (int i = 0; i < args.Length(); i++)
-        {
-            v8::String::Utf8Value str(isolate, args[i]);
-            result.append(*str);
-
-            if (i != args.Length() - 1)
-                result.append(1, ' ');
-        }
-
-        if (newline)
-            result.append(1, '\n');
-
-        printf("%s", result.c_str());
-    }
-    else
-    {
-        if (newline)
-            printf("\n");
-    }
-}
-
-JSFUNC(print) { JSPrint(args, false); }
-
-JSFUNC(println) { JSPrint(args, true); }
-
 namespace scripter { namespace modules {
+
+    void JSPrint(const v8::FunctionCallbackInfo<v8::Value>& args, bool newline)
+    {
+        v8::Isolate* isolate = v8::Isolate::GetCurrent();
+        v8::HandleScope handleScope(isolate);
+
+        if (args.Length() > 0)
+        {
+            std::string result;
+
+            for (int i = 0; i < args.Length(); i++)
+            {
+                v8::String::Utf8Value str(isolate, args[i]);
+                result.append(*str);
+
+                if (i != args.Length() - 1)
+                    result.append(1, ' ');
+            }
+
+            if (newline)
+                result.append(1, '\n');
+
+            printf("%s", result.c_str());
+        }
+        else
+        {
+            if (newline)
+                printf("\n");
+        }
+    }
+
+    JSFUNC(print) { JSPrint(args, false); }
+
+    JSFUNC(println) { JSPrint(args, true); }
 
     System::System(Engine* engine) : Module(engine)
     {

@@ -13,6 +13,7 @@ public:
     {
         m_Functions["wow"] = JSFunc_test;
     }
+
     ~TestModule() {}
 
     virtual std::string GetPackageName() override { return "test"; }
