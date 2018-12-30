@@ -1,6 +1,8 @@
 # TODO List
 
-- [ ] Javascript modules, implement my own system 
+- [ ] Javascript modules
+    - [x] Native Module loader
+    - [ ] JS Module loader
 - [ ] Better way to add custom libraries.
 - [ ] Better way to convert c++ classes to js objects/class
 - [x] Add some helpers for example new v8 string
