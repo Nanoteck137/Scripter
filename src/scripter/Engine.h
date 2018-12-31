@@ -68,6 +68,12 @@ namespace scripter {
         void ThrowException(const char* format, ...);
 
         /**
+         * Checks a try catch if a exception was thrown, returns true if a
+         * exception was thrown
+         */
+        bool CheckTryCatch(v8::TryCatch* tryCatch);
+
+        /**
          * Prints an object and its properties
          */
         void PrintObject(v8::Local<v8::Context> context,
@@ -98,7 +104,7 @@ namespace scripter {
          * Initializes the V8 library and some other systems ex. logger
          */
         static void InitializeV8(const char* execPath);
-        
+
         /**
          * Deinitializes the V8 library and some other systems
          */

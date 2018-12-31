@@ -76,6 +76,8 @@ namespace scripter {
 
     ScriptEnv::ScriptEnv(Engine* engine) : m_Engine(engine)
     {
+        SCRIPTER_ASSERT(engine);
+
         v8::Isolate* isolate = engine->GetIsolate();
         v8::HandleScope scope(isolate);
 
@@ -103,6 +105,8 @@ namespace scripter {
 
     void ScriptEnv::ImportModule(Module* module)
     {
+        SCRIPTER_ASSERT(module);
+
         // TODO: Check if module already loaded
         v8::Local<v8::Context> context = GetContext();
         v8::Local<v8::Object> globals =
@@ -139,30 +143,14 @@ namespace scripter {
         if (!v8::ScriptCompiler::Compile(GetContext(), &source)
                  .ToLocal(&script))
         {
-            if (tryCatch.HasCaught())
-            {
-                v8::Local<v8::Value> ex = tryCatch.Exception();
-
-                v8::String::Utf8Value str(isolate, ex);
-
-                SCRIPTER_LOG_ERROR("Exception: {0}", *str);
-
-                return result;
-            }
+            if (m_Engine->CheckTryCatch(&tryCatch))
+                return v8::MaybeLocal<v8::Value>();
         }
         else
         {
             result = script->Run(m_Context.Get(isolate));
-            if (tryCatch.HasCaught())
-            {
-                v8::Local<v8::Value> ex = tryCatch.Exception();
-
-                v8::String::Utf8Value str(isolate, ex);
-
-                SCRIPTER_LOG_ERROR("Exception: {0}", *str);
-
-                return result;
-            }
+            if (m_Engine->CheckTryCatch(&tryCatch))
+                return v8::MaybeLocal<v8::Value>();
         }
 
         return handleScope.EscapeMaybe(result);

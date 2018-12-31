@@ -166,14 +166,7 @@ int main(int argc, const char** argv)
         v8::Local<v8::Value> funcArgs[] = {array};
 
         function->Call(v8::Null(isolate), 1, funcArgs);
-        if (tryCatch.HasCaught())
-        {
-            v8::Local<v8::Value> ex = tryCatch.Exception();
-
-            v8::String::Utf8Value str(isolate, ex);
-
-            SCRIPTER_LOG_ERROR("Exception: {0}", *str);
-        }
+        engine->CheckTryCatch(&tryCatch);
 
         auto context = env.GetContext();
         auto globals = context->Global();

@@ -27,6 +27,8 @@
 #include "scripter/Logger.h"
 #include "scripter/NativeModuleImporter.h"
 
+#include <v8-internal.h>
+
 namespace scripter {
 
     std::unique_ptr<v8::Platform> Engine::s_Platform;
@@ -63,6 +65,40 @@ namespace scripter {
         m_Isolate->ThrowException(CreateString(buffer));
     }
 
+    bool Engine::CheckTryCatch(v8::TryCatch* tryCatch)
+    {
+        SCRIPTER_ASSERT(tryCatch);
+
+        if (tryCatch->HasCaught())
+        {
+            v8::Local<v8::Value> ex = tryCatch->Exception();
+            v8::Local<v8::Message> message = tryCatch->Message();
+
+            v8::String::Utf8Value exMessage(m_Isolate, ex);
+            v8::String::Utf8Value scriptName(m_Isolate,
+                                             message->GetScriptResourceName());
+            v8::String::Utf8Value sourceLine(
+                m_Isolate,
+                message->GetSourceLine(m_Isolate->GetCurrentContext())
+                    .ToLocalChecked());
+
+            SCRIPTER_LOG_ERROR("---------------- EXCEPTION ----------------");
+            SCRIPTER_LOG_ERROR(
+                "{0}:{1}", *scriptName,
+                message->GetLineNumber(m_Isolate->GetCurrentContext())
+                    .ToChecked());
+            SCRIPTER_LOG_ERROR("Code: {0}", *sourceLine);
+            SCRIPTER_LOG_ERROR("{0}", *exMessage);
+            fflush(stdout);
+            message->PrintCurrentStackTrace(m_Isolate, stdout);
+            fflush(stdout);
+            SCRIPTER_LOG_ERROR("-------------------------------------------");
+
+            return true;
+        }
+        return false;
+    }
+
     void Engine::PrintObject(v8::Local<v8::Context> context,
                              v8::Local<v8::Object> object)
     {
@@ -87,6 +123,16 @@ namespace scripter {
         SCRIPTER_LOG_INFO("--------------------");
     }
 
+    void Engine::PrintValue(v8::Local<v8::Value> value)
+    {
+        SCRIPTER_LOG_INFO("---- VALUE ----");
+
+        v8::String::Utf8Value str(m_Isolate, value);
+        SCRIPTER_LOG_INFO("{0}", *str);
+
+        SCRIPTER_LOG_INFO("-----------\n");
+    }
+
     v8::Local<v8::String> Engine::CreateString(const std::string& value)
     {
         return CreateString(value.c_str());
@@ -97,16 +143,6 @@ namespace scripter {
         return v8::String::NewFromUtf8(m_Isolate, value,
                                        v8::NewStringType::kNormal)
             .ToLocalChecked();
-    }
-
-    void Engine::PrintValue(v8::Local<v8::Value> value)
-    {
-        SCRIPTER_LOG_INFO("---- VALUE ----");
-
-        v8::String::Utf8Value str(m_Isolate, value);
-        SCRIPTER_LOG_INFO("{0}", *str);
-
-        SCRIPTER_LOG_INFO("-----------\n");
     }
 
     void Engine::InitializeV8(const char* execPath)
