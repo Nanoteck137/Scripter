@@ -127,7 +127,6 @@ using namespace scripter;
 
 int main(int argc, const char** argv)
 {
-    Logger::Initialize();
     Engine::InitializeV8(argv[0]);
 
     Engine* engine = new Engine();
@@ -143,10 +142,11 @@ int main(int argc, const char** argv)
         modules::System* systemModule = new modules::System(engine);
         modules::Console* consoleModule = new modules::Console(engine);
 
-        Module* modules[] = {systemModule, consoleModule};
-
-        ScriptEnv env(engine, modules, 2);
+        ScriptEnv env(engine);
         env.Enable();
+
+        env.ImportModule(systemModule);
+        env.ImportModule(consoleModule);
 
         std::string scriptSource = ReadFile("scripts/test.js");
 

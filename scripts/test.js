@@ -1,5 +1,3 @@
-throw "Hello World";
-
 function main(args) {
     /*system.println(args);
     let file = system.open("test.txt", system.FILE_WRITE_ONLY | system.FILE_CREATE | system.FILE_TRUNCATE);
@@ -13,6 +11,8 @@ function main(args) {
     }
 
     system.close(file);*/
+
+    console.info("Hello World");
 
     importModule("Test");
 

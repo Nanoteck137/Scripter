@@ -46,7 +46,7 @@ namespace scripter {
 
         if (!module)
         {
-            engine->ThrowException("Could not load module %s\n",
+            engine->ThrowException("Could not load module %s",
                                    moduleName.c_str());
             return;
         }
@@ -58,22 +58,13 @@ namespace scripter {
         script->ImportModule(module);
     }
 
-    ScriptEnv::ScriptEnv(Engine* engine, Module* modules[],
-                         uint32_t moduleCount)
-        : m_Engine(engine)
+    ScriptEnv::ScriptEnv(Engine* engine) : m_Engine(engine)
     {
         v8::Isolate* isolate = engine->GetIsolate();
-
         v8::HandleScope scope(isolate);
 
         v8::Local<v8::ObjectTemplate> globals =
             v8::ObjectTemplate::New(isolate);
-
-        for (uint32_t i = 0; i < moduleCount; i++)
-        {
-            globals->Set(isolate, modules[i]->GetPackageName().c_str(),
-                         modules[i]->GenerateObject());
-        }
 
         v8::Local<v8::External> data = v8::External::New(isolate, this);
 

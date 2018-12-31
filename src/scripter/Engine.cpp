@@ -121,6 +121,9 @@ namespace scripter {
 
         // Initialize NativeModuleImporter
         NativeModuleImporter::Initialize();
+
+        // Initialize Logger
+        Logger::Initialize();
     }
 
     void Engine::DeinitializeV8()
@@ -131,6 +134,9 @@ namespace scripter {
 
         // Deinitalize NativeModuleImporter
         NativeModuleImporter::Deinitialize();
+
+        // Deinitialize Logger
+        Logger::Deinitialize();
     }
 
 } // namespace scripter

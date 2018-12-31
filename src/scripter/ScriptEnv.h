@@ -49,10 +49,8 @@ namespace scripter {
         /**
          * Constructor
          * @param engine the engine this script environment should use
-         * @param modules modules this script environment can access
-         * @param moduleCount how many modules are there
          */
-        ScriptEnv(Engine* engine, Module* modules[], uint32_t moduleCount);
+        ScriptEnv(Engine* engine);
 
         ~ScriptEnv();
 
