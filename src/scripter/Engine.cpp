@@ -77,16 +77,17 @@ namespace scripter {
             v8::Local<v8::StackTrace> stackTrace = message->GetStackTrace();
             SCRIPTER_LOG_INFO("{0}", stackTrace->GetFrameCount());
 
-            for (int i = 0; i < stackTrace->GetFrameCount(); i++)
-            {
-                v8::Local<v8::StackFrame> frame =
-                    stackTrace->GetFrame(m_Isolate, i);
-                SCRIPTER_LOG_ERROR(
-                    "Function: {0}",
-                    ConvertValueToString(frame->GetFunctionName()));
-            }
-
             SCRIPTER_LOG_ERROR("---------------- EXCEPTION ----------------");
+
+            if (stackTrace->GetFrameCount() > 1)
+            {
+                String functionName = ConvertValueToString(
+                    stackTrace->GetFrame(m_Isolate, 0)->GetFunctionName());
+                if (functionName != "")
+                {
+                    SCRIPTER_LOG_ERROR("Function: {0}", functionName);
+                }
+            }
 
             SCRIPTER_LOG_ERROR(
                 "{0}:{1}",
@@ -101,6 +102,18 @@ namespace scripter {
                         .ToLocalChecked()));
 
             SCRIPTER_LOG_ERROR("{0}", ConvertValueToString(ex));
+
+            SCRIPTER_LOG_ERROR("Stacktrace:");
+            for (int i = 0; i < stackTrace->GetFrameCount(); i++)
+            {
+                v8::Local<v8::StackFrame> frame =
+                    stackTrace->GetFrame(m_Isolate, i);
+                SCRIPTER_LOG_ERROR(
+                    "\tFunction: {0} - {1}:{2}",
+                    ConvertValueToString(frame->GetFunctionName()),
+                    ConvertValueToString(frame->GetScriptName()),
+                    frame->GetLineNumber());
+            }
 
             SCRIPTER_LOG_ERROR("-------------------------------------------");
 

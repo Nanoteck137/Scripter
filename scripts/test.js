@@ -1,5 +1,4 @@
-Error.stackTraceLimit = 10;
-throw new Error("Hello World");
+throw "Hello World";
 
 function main(args) {
     /*system.println(args);
@@ -18,7 +17,12 @@ function main(args) {
     console.info("Hello World");
 
     let test = importModule("Test");
-    wao
+
+    function testFunc() {
+        wao
+    }
+
+    testFunc();
 
     test.wow();
 
