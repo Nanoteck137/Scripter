@@ -23,13 +23,13 @@
  */
 #include "ScriptEnv.h"
 
-#include "NativeModuleImporter.h"
+#include "scripter/NativeModuleImporter.h"
 
 namespace scripter {
 
     JSFUNC(importModule)
     {
-        JS_FUNC_START();
+        JS_FUNC_ISOLATE_ENGINE();
         v8::HandleScope handleScope(isolate);
 
         JS_CHECK_ARGS_LENGTH(1);

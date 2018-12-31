@@ -107,9 +107,13 @@
 
 #define JS_CHECK_ARG(type, x) _JS_CHECK_ARG(type, x)
 
-#define JS_FUNC_START()                                                        \
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();                          \
-    scripter::Engine* engine = (scripter::Engine*)isolate->GetData(0);
+#define JS_FUNC_ISOLATE() v8::Isolate* isolate = v8::Isolate::GetCurrent()
+#define JS_FUNC_ENGINE()                                                       \
+    scripter::Engine* engine = (scripter::Engine*)isolate->GetData(0)
+
+#define JS_FUNC_ISOLATE_ENGINE()                                               \
+    JS_FUNC_ISOLATE();                                                         \
+    JS_FUNC_ENGINE()
 
 namespace scripter {
 

@@ -24,7 +24,8 @@
 
 #include "Engine.h"
 
-#include "NativeModuleImporter.h"
+#include "scripter/Logger.h"
+#include "scripter/NativeModuleImporter.h"
 
 namespace scripter {
 
@@ -65,23 +66,25 @@ namespace scripter {
     void Engine::PrintObject(v8::Local<v8::Context> context,
                              v8::Local<v8::Object> object)
     {
-        printf("-- OBJECT --\n");
+        SCRIPTER_LOG_INFO("------ OBJECT ------");
         v8::String::Utf8Value objectStr(m_Isolate, object);
-        printf("%s\n", *objectStr);
+        SCRIPTER_LOG_INFO("{0}", *objectStr);
 
         v8::Local<v8::Array> properties = object->GetPropertyNames();
         int length = properties->Length();
-        printf("Number of properties = %d:\n", length);
+
+        SCRIPTER_LOG_INFO("Number of properties = {0}:", length);
+
         for (int i = 0; i < length; i++)
         {
             v8::Local<v8::Value> key =
                 properties->Get(context, i).ToLocalChecked();
             v8::String::Utf8Value str(m_Isolate, key);
 
-            printf("\t%d. %s\n", (i + 1), *str);
+            SCRIPTER_LOG_INFO("  {0}. {1}", (i + 1), *str);
         }
 
-        printf("------------\n");
+        SCRIPTER_LOG_INFO("--------------------");
     }
 
     v8::Local<v8::String> Engine::CreateString(const std::string& value)
@@ -98,12 +101,12 @@ namespace scripter {
 
     void Engine::PrintValue(v8::Local<v8::Value> value)
     {
-        printf("-- VALUE --\n");
+        SCRIPTER_LOG_INFO("---- VALUE ----");
 
         v8::String::Utf8Value str(m_Isolate, value);
-        printf("%s\n", *str);
+        SCRIPTER_LOG_INFO("{0}", *str);
 
-        printf("-----------\n");
+        SCRIPTER_LOG_INFO("-----------\n");
     }
 
     void Engine::InitializeV8(const char* execPath)

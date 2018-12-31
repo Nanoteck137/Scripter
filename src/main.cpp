@@ -40,7 +40,7 @@
 
 JSFUNC(open)
 {
-    JS_FUNC_START();
+    JS_FUNC_ISOLATE_ENGINE();
 
     v8::HandleScope handleScope(isolate);
 
@@ -68,7 +68,7 @@ JSFUNC(open)
 
 JSFUNC(write)
 {
-    JS_FUNC_START();
+    JS_FUNC_ISOLATE_ENGINE();
 
     v8::HandleScope handleScope(isolate);
 
@@ -96,7 +96,7 @@ JSFUNC(write)
 
 JSFUNC(close)
 {
-    JS_FUNC_START();
+    JS_FUNC_ISOLATE_ENGINE();
 
     v8::HandleScope handleScope(isolate);
 
@@ -165,6 +165,11 @@ int main(int argc, const char** argv)
         v8::Local<v8::Value> funcArgs[] = {array};
 
         function->Call(v8::Null(isolate), 1, funcArgs);
+
+        auto context = env.GetContext();
+        auto globals = context->Global();
+
+        engine->PrintObject(context, globals);
 
         env.Disable();
 

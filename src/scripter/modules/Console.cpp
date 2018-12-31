@@ -29,7 +29,7 @@ namespace scripter { namespace modules {
 
     JSFUNC(info)
     {
-        JS_FUNC_START();
+        JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
         std::string result;
@@ -48,7 +48,7 @@ namespace scripter { namespace modules {
 
     JSFUNC(warning)
     {
-        JS_FUNC_START();
+        JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
         std::string result;
@@ -67,7 +67,7 @@ namespace scripter { namespace modules {
 
     JSFUNC(error)
     {
-        JS_FUNC_START();
+        JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
         std::string result;
@@ -86,7 +86,7 @@ namespace scripter { namespace modules {
 
     JSFUNC(critical)
     {
-        JS_FUNC_START();
+        JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
         std::string result;
