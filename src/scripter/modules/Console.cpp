@@ -103,12 +103,37 @@ namespace scripter { namespace modules {
         JS_LOG_CRITICAL("{0}", result);
     }
 
+    JSFUNC(assert)
+    {
+        JS_FUNC_ISOLATE_ENGINE();
+        v8::HandleScope handleScope(isolate);
+
+        JS_CHECK_ARG(JS_TYPE_BOOLEAN, 0);
+
+        bool assertCondition = args[0]->BooleanValue(isolate);
+        if (!assertCondition)
+        {
+            std::string result;
+            for (int i = 1; i < args.Length(); i++)
+            {
+                v8::String::Utf8Value str(isolate, args[i]);
+                result.append(*str);
+
+                if (i != args.Length() - 1)
+                    result.append(1, ' ');
+            }
+
+            SCRIPTER_ASSERT(false, "{0}", result);
+        }
+    }
+
     Console::Console(Engine* engine) : Module(engine)
     {
         m_Functions["info"] = JSFunc_info;
         m_Functions["warning"] = JSFunc_warning;
         m_Functions["error"] = JSFunc_error;
         m_Functions["critical"] = JSFunc_critical;
+        m_Functions["assert"] = JSFunc_assert;
     }
 
     Console::~Console() {}
