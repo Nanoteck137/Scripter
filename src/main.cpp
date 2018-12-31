@@ -132,6 +132,8 @@ int main(int argc, const char** argv)
     Engine* engine = new Engine();
 
     v8::Isolate* isolate = engine->GetIsolate();
+    // isolate->SetCaptureStackTraceForUncaughtExceptions
+    isolate->SetCaptureStackTraceForUncaughtExceptions(true);
 
     engine->StartIsolate();
     {

@@ -74,24 +74,34 @@ namespace scripter {
             v8::Local<v8::Value> ex = tryCatch->Exception();
             v8::Local<v8::Message> message = tryCatch->Message();
 
-            v8::String::Utf8Value exMessage(m_Isolate, ex);
-            v8::String::Utf8Value scriptName(m_Isolate,
-                                             message->GetScriptResourceName());
-            v8::String::Utf8Value sourceLine(
-                m_Isolate,
-                message->GetSourceLine(m_Isolate->GetCurrentContext())
-                    .ToLocalChecked());
+            v8::Local<v8::StackTrace> stackTrace = message->GetStackTrace();
+            SCRIPTER_LOG_INFO("{0}", stackTrace->GetFrameCount());
+
+            for (int i = 0; i < stackTrace->GetFrameCount(); i++)
+            {
+                v8::Local<v8::StackFrame> frame =
+                    stackTrace->GetFrame(m_Isolate, i);
+                SCRIPTER_LOG_ERROR(
+                    "Function: {0}",
+                    ConvertValueToString(frame->GetFunctionName()));
+            }
 
             SCRIPTER_LOG_ERROR("---------------- EXCEPTION ----------------");
+
             SCRIPTER_LOG_ERROR(
-                "{0}:{1}", *scriptName,
+                "{0}:{1}",
+                ConvertValueToString(message->GetScriptResourceName()),
                 message->GetLineNumber(m_Isolate->GetCurrentContext())
                     .ToChecked());
-            SCRIPTER_LOG_ERROR("Code: {0}", *sourceLine);
-            SCRIPTER_LOG_ERROR("{0}", *exMessage);
-            fflush(stdout);
-            message->PrintCurrentStackTrace(m_Isolate, stdout);
-            fflush(stdout);
+
+            SCRIPTER_LOG_ERROR(
+                "Code: {0}",
+                ConvertValueToString(
+                    message->GetSourceLine(m_Isolate->GetCurrentContext())
+                        .ToLocalChecked()));
+
+            SCRIPTER_LOG_ERROR("{0}", ConvertValueToString(ex));
+
             SCRIPTER_LOG_ERROR("-------------------------------------------");
 
             return true;
@@ -143,6 +153,12 @@ namespace scripter {
         return v8::String::NewFromUtf8(m_Isolate, value,
                                        v8::NewStringType::kNormal)
             .ToLocalChecked();
+    }
+
+    String Engine::ConvertValueToString(v8::Local<v8::Value> string)
+    {
+        v8::String::Utf8Value value(m_Isolate, string);
+        return String(*value);
     }
 
     void Engine::InitializeV8(const char* execPath)

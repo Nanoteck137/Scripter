@@ -94,6 +94,8 @@ namespace scripter {
          */
         v8::Local<v8::String> CreateString(const char* value);
 
+        String ConvertValueToString(v8::Local<v8::Value> value);
+
         /**
          * Returns the V8 isolate
          */
