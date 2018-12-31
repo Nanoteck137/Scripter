@@ -73,7 +73,7 @@ namespace scripter {
         /**
          * Compiles and runs a javascript script
          */
-        v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
+        v8::MaybeLocal<v8::Value> CompileAndRun(const String& filePath);
 
         /**
          * Returns the V8 Context.

@@ -25,6 +25,7 @@
 
 #include "scripter/NativeModuleImporter.h"
 #include "scripter/Logger.h"
+#include "scripter/utils/File.h"
 
 namespace scripter {
 
@@ -117,15 +118,18 @@ namespace scripter {
                      objTemplate->NewInstance(context).ToLocalChecked());
     }
 
-    v8::MaybeLocal<v8::Value> ScriptEnv::CompileAndRun(const std::string& code)
+    v8::MaybeLocal<v8::Value> ScriptEnv::CompileAndRun(const String& filePath)
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
 
         v8::EscapableHandleScope handleScope(isolate);
         v8::TryCatch tryCatch(isolate);
 
+        String fullFilePath = File::GetFullPath(filePath);
+        String fileContent = File::ReadFile(fullFilePath);
+
         v8::ScriptOrigin origin(
-            m_Engine->CreateString("TODO"),
+            m_Engine->CreateString(fullFilePath),
             v8::Local<v8::Integer>(),         // resource_line_offset
             v8::Local<v8::Integer>(),         // resource_column_offset
             v8::False(isolate),               // resource_is_shared_cross_origin
@@ -136,7 +140,8 @@ namespace scripter {
             v8::Local<v8::Boolean>(),         // is_module
             v8::Local<v8::PrimitiveArray>()); // host_defined_options
 
-        v8::ScriptCompiler::Source source(m_Engine->CreateString(code), origin);
+        v8::ScriptCompiler::Source source(m_Engine->CreateString(fileContent),
+                                          origin);
 
         v8::MaybeLocal<v8::Value> result;
         v8::Local<v8::Script> script;

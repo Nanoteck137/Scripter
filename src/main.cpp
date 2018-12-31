@@ -35,24 +35,10 @@
 #include <scripter/Engine.h>
 #include <scripter/ScriptEnv.h>
 
+#include <scripter/utils/File.h>
+
 #include <scripter/modules/System.h>
 #include <scripter/modules/Console.h>
-
-std::string ReadFile(const std::string& filename)
-{
-    FILE* file = fopen(filename.c_str(), "rt");
-
-    fseek(file, 0, SEEK_END);
-    int length = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    std::string result(length, 0);
-    fread(&result[0], 1, length, file);
-
-    fclose(file);
-
-    return result;
-}
 
 using namespace scripter;
 
@@ -81,9 +67,7 @@ int main(int argc, const char** argv)
         env.ImportModule(systemModule);
         env.ImportModule(consoleModule);
 
-        std::string scriptSource = ReadFile("scripts/test.js");
-
-        env.CompileAndRun(scriptSource);
+        env.CompileAndRun("scripts/test.js");
 
         auto function = env.GetFunction("main").ToLocalChecked();
 
