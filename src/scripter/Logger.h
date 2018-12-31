@@ -28,6 +28,16 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#define SCRIPTER_ASSERT(x, ...)                                                \
+    if (!(x))                                                                  \
+    {                                                                          \
+        SCRIPTER_LOG_CRITICAL("ASSERTION FAILED:");                            \
+        SCRIPTER_LOG_CRITICAL("File: {0}:{1}", __FUNCTION__, __LINE__);        \
+        SCRIPTER_LOG_CRITICAL("Condition: {0}", #x);                           \
+        SCRIPTER_LOG_CRITICAL("Message: " __VA_ARGS__);                        \
+        SCRIPTER_TRAP_DEBUGGER;                                                \
+    }
+
 #define SCRIPTER_LOG_INFO(...)                                                 \
     ::scripter::Logger::GetScripterLogger()->info(__VA_ARGS__)
 

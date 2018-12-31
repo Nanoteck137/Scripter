@@ -27,7 +27,7 @@
 #include <string>
 
 #ifdef SCRIPTER_PLATFORM_LINUX
-#define TRAP_DEBUGGER __asm("int $3")
+#define SCRIPTER_TRAP_DEBUGGER __asm("int $3")
 #else
 #error Unsupported Platform
 #endif
