@@ -75,7 +75,8 @@ namespace scripter {
             v8::Local<v8::Message> message = tryCatch->Message();
             v8::Local<v8::StackTrace> stackTrace = message->GetStackTrace();
 
-            SCRIPTER_LOG_ERROR("---------------- EXCEPTION ----------------");
+            SCRIPTER_LOG_ERROR(
+                "------------ JAVASCRIPT EXCEPTION ------------");
 
             if (stackTrace->GetFrameCount() > 1)
             {
@@ -127,7 +128,8 @@ namespace scripter {
                 }
             }
 
-            SCRIPTER_LOG_ERROR("-------------------------------------------");
+            SCRIPTER_LOG_ERROR(
+                "----------------------------------------------");
 
             return true;
         }

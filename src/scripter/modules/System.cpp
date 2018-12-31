@@ -23,46 +23,92 @@
  */
 #include "System.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 namespace scripter { namespace modules {
 
-    void JSPrint(const v8::FunctionCallbackInfo<v8::Value>& args, bool newline)
+    JSFUNC(open)
     {
-        v8::Isolate* isolate = v8::Isolate::GetCurrent();
+        JS_FUNC_ISOLATE_ENGINE();
+
         v8::HandleScope handleScope(isolate);
 
-        if (args.Length() > 0)
+        JS_CHECK_ARGS_LENGTH(2);
+
+        JS_CHECK_ARG(JS_TYPE_STRING, 0);
+        JS_CHECK_ARG(JS_TYPE_INT32, 1);
+
+        v8::Local<v8::String> str =
+            args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+
+        std::string file = engine->ConvertValueToString(str);
+        int flags =
+            args[1]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+
+        mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+        int result = open(file.c_str(), flags, mode);
+        if (result == -1)
         {
-            std::string result;
-
-            for (int i = 0; i < args.Length(); i++)
-            {
-                v8::String::Utf8Value str(isolate, args[i]);
-                result.append(*str);
-
-                if (i != args.Length() - 1)
-                    result.append(1, ' ');
-            }
-
-            if (newline)
-                result.append(1, '\n');
-
-            printf("%s", result.c_str());
+            printf("Error open: %s\n", strerror(errno));
         }
-        else
-        {
-            if (newline)
-                printf("\n");
-        }
+
+        args.GetReturnValue().Set(result);
     }
 
-    JSFUNC(print) { JSPrint(args, false); }
+    JSFUNC(write)
+    {
+        JS_FUNC_ISOLATE_ENGINE();
 
-    JSFUNC(println) { JSPrint(args, true); }
+        v8::HandleScope handleScope(isolate);
+
+        JS_CHECK_ARGS_LENGTH(2);
+
+        JS_CHECK_ARG(JS_TYPE_INT32, 0);
+        JS_CHECK_ARG(JS_TYPE_STRING, 1);
+
+        int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+        v8::Local<v8::String> str =
+            args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+
+        std::string content = engine->ConvertValueToString(str);
+        int result = write(fd, content.c_str(), content.length());
+
+        if (result == -1)
+        {
+            engine->ThrowException("File Error: %s", strerror(errno));
+        }
+
+        args.GetReturnValue().Set(result);
+    }
+
+    JSFUNC(close)
+    {
+        JS_FUNC_ISOLATE_ENGINE();
+
+        v8::HandleScope handleScope(isolate);
+
+        JS_CHECK_ARGS_LENGTH(1);
+        JS_CHECK_ARG(JS_TYPE_INT32, 0);
+
+        int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+        close(fd);
+    }
 
     System::System(Engine* engine) : Module(engine)
     {
-        m_Functions["print"] = JSFunc_print;
-        m_Functions["println"] = JSFunc_println;
+        // TODO(patrik): Need to add the file attributes like FILE_READ
+        // FILE_WRITE
+
+        m_Functions["open"] = JSFunc_open;
+        m_Functions["write"] = JSFunc_write;
+        m_Functions["close"] = JSFunc_close;
     }
 
     System::~System() {}

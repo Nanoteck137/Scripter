@@ -38,75 +38,6 @@
 #include <scripter/modules/System.h>
 #include <scripter/modules/Console.h>
 
-JSFUNC(open)
-{
-    JS_FUNC_ISOLATE_ENGINE();
-
-    v8::HandleScope handleScope(isolate);
-
-    JS_CHECK_ARGS_LENGTH(2);
-
-    JS_CHECK_ARG(JS_TYPE_STRING, 0);
-    JS_CHECK_ARG(JS_TYPE_INT32, 1);
-
-    v8::Local<v8::String> str =
-        args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
-    v8::String::Utf8Value strValue(isolate, str);
-
-    const char* file = *strValue;
-    int flags = args[1]->Int32Value(isolate->GetCurrentContext()).ToChecked();
-
-    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-    int result = open(file, flags, mode);
-    if (result == -1)
-    {
-        printf("Error open: %s\n", strerror(errno));
-    }
-
-    args.GetReturnValue().Set(result);
-}
-
-JSFUNC(write)
-{
-    JS_FUNC_ISOLATE_ENGINE();
-
-    v8::HandleScope handleScope(isolate);
-
-    JS_CHECK_ARGS_LENGTH(2);
-
-    JS_CHECK_ARG(JS_TYPE_INT32, 0);
-    JS_CHECK_ARG(JS_TYPE_STRING, 1);
-
-    int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
-    v8::Local<v8::String> str =
-        args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
-
-    v8::String::Utf8Value strValue(isolate, str);
-
-    const char* buffer = *strValue;
-    int result = write(fd, buffer, strValue.length());
-
-    if (result == -1)
-    {
-        engine->ThrowException("File Error: %s", strerror(errno));
-    }
-
-    args.GetReturnValue().Set(result);
-}
-
-JSFUNC(close)
-{
-    JS_FUNC_ISOLATE_ENGINE();
-
-    v8::HandleScope handleScope(isolate);
-
-    JS_CHECK_ARGS_LENGTH(1);
-    JS_CHECK_ARG(JS_TYPE_INT32, 0);
-
-    int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
-    close(fd);
-}
-
 std::string ReadFile(const std::string& filename)
 {
     FILE* file = fopen(filename.c_str(), "rt");
@@ -169,11 +100,6 @@ int main(int argc, const char** argv)
 
         function->Call(v8::Null(isolate), 1, funcArgs);
         engine->CheckTryCatch(&tryCatch);
-
-        auto context = env.GetContext();
-        auto globals = context->Global();
-
-        engine->PrintObject(context, globals);
 
         env.Disable();
 
