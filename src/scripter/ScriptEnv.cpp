@@ -24,6 +24,7 @@
 #include "ScriptEnv.h"
 
 #include "scripter/NativeModuleImporter.h"
+#include "scripter/Logger.h"
 
 namespace scripter {
 
@@ -112,11 +113,23 @@ namespace scripter {
         v8::EscapableHandleScope handleScope(isolate);
         v8::TryCatch tryCatch(isolate);
 
-        v8::Local<v8::String> source = m_Engine->CreateString(code);
+        v8::ScriptOrigin origin(
+            m_Engine->CreateString("TODO"),
+            v8::Local<v8::Integer>(),         // resource_line_offset
+            v8::Local<v8::Integer>(),         // resource_column_offset
+            v8::False(isolate),               // resource_is_shared_cross_origin
+            v8::Local<v8::Integer>(),         // script_id
+            v8::Local<v8::Value>(),           // source_map_url
+            v8::False(isolate),               // resource_is_opaque
+            v8::Local<v8::Boolean>(),         // is_wasm
+            v8::Local<v8::Boolean>(),         // is_module
+            v8::Local<v8::PrimitiveArray>()); // host_defined_options
+
+        v8::ScriptCompiler::Source source(m_Engine->CreateString(code), origin);
 
         v8::MaybeLocal<v8::Value> result;
         v8::Local<v8::Script> script;
-        if (!v8::Script::Compile(m_Context.Get(isolate), source)
+        if (!v8::ScriptCompiler::Compile(GetContext(), &source)
                  .ToLocal(&script))
         {
             if (tryCatch.HasCaught())
@@ -125,7 +138,9 @@ namespace scripter {
 
                 v8::String::Utf8Value str(isolate, ex);
 
-                printf("Exception %s\n", *str);
+                SCRIPTER_LOG_ERROR("Exception: {0}", *str);
+
+                return result;
             }
         }
         else
@@ -137,7 +152,9 @@ namespace scripter {
 
                 v8::String::Utf8Value str(isolate, ex);
 
-                printf("Exception %s\n", *str);
+                SCRIPTER_LOG_ERROR("Exception: {0}", *str);
+
+                return result;
             }
         }
 

@@ -1,4 +1,4 @@
-console.assert(false, "Hello World");
+throw "Hello World";
 
 function main(args) {
     /*system.println(args);
@@ -13,14 +13,6 @@ function main(args) {
     }
 
     system.close(file);*/
-
-    //test.wow();
-    system.println("Hello World");
-
-    console.info("Hello World");
-    console.warning("Hello World");
-    console.error("Hello World");
-    console.critical("Hello World");
 
     importModule("Test");
 

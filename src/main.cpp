@@ -149,6 +149,7 @@ int main(int argc, const char** argv)
         env.Enable();
 
         std::string scriptSource = ReadFile("scripts/test.js");
+
         env.CompileAndRun(scriptSource);
 
         auto function = env.GetFunction("main").ToLocalChecked();
