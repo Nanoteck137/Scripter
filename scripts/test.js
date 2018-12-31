@@ -14,7 +14,7 @@ function main(args) {
 
     console.info("Hello World");
 
-    importModule("Test");
+    let test = importModule("Test");
 
     test.wow();
 

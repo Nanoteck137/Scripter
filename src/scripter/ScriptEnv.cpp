@@ -37,6 +37,12 @@ namespace scripter {
 
         JS_CHECK_ARG(JS_TYPE_STRING, 0);
 
+        bool loadToGlobal = false;
+        if (args[1]->IsBoolean())
+        {
+            loadToGlobal = args[1]->BooleanValue(isolate);
+        }
+
         v8::String::Utf8Value moduleNameStr(isolate,
                                             args[0]->ToString(isolate));
         std::string moduleName = std::string(*moduleNameStr);
@@ -51,11 +57,21 @@ namespace scripter {
             return;
         }
 
-        v8::Local<v8::External> data =
-            v8::Local<v8::External>::Cast(args.Data());
-        ScriptEnv* script = (ScriptEnv*)data->Value();
+        if (loadToGlobal)
+        {
+            v8::Local<v8::External> data =
+                v8::Local<v8::External>::Cast(args.Data());
+            ScriptEnv* script = (ScriptEnv*)data->Value();
 
-        script->ImportModule(module);
+            script->ImportModule(module);
+        }
+        else
+        {
+            args.GetReturnValue().Set(
+                module->GenerateObject()
+                    ->NewInstance(isolate->GetCurrentContext())
+                    .ToLocalChecked());
+        }
     }
 
     ScriptEnv::ScriptEnv(Engine* engine) : m_Engine(engine)

@@ -36,9 +36,10 @@
     void JSFunc_##name(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 #define JS_CHECK_ARGS_LENGTH(x)                                                \
-    if (args.Length() != x)                                                    \
+    if (args.Length() < x)                                                     \
     {                                                                          \
-        engine->ThrowException("%s: Needs %d argument(s)", __FUNCTION__, x);   \
+        engine->ThrowException("%s: Needs %d or more arguments", __FUNCTION__, \
+                               x);                                             \
         return;                                                                \
     }
 
@@ -135,11 +136,10 @@ namespace scripter {
     protected:
         Module(Engine* engine);
 
-    private:
-        v8::Local<v8::ObjectTemplate> GenerateObject();
-
     public:
         virtual ~Module();
+
+        v8::Local<v8::ObjectTemplate> GenerateObject();
 
         virtual std::string GetPackageName() = 0;
     };
