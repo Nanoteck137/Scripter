@@ -23,19 +23,28 @@
  */
 #pragma once
 
-#include "scripter/Common.h"
-#include "scripter/Module.h"
+#include <stdint.h>
+#include <string>
 
-namespace scripter { namespace modules {
+#ifdef SCRIPTER_PLATFORM_LINUX
+#define TRAP_DEBUGGER __asm("int $3")
+#else
+#error Unsupported Platform
+#endif
 
-    class Console : public Module
-    {
-    private:
-    public:
-        Console(Engine* engine);
-        ~Console();
+namespace scripter {
 
-        virtual std::string GetPackageName() override;
-    };
+    typedef int8_t int8;
+    typedef int16_t int16;
+    typedef int32_t int32;
+    typedef int64_t int64;
 
-}} // namespace scripter::modules
+    typedef uint8_t uint8;
+    typedef uint16_t uint16;
+    typedef uint32_t uint32;
+    typedef uint64_t uint64;
+
+    typedef uint8 byte;
+    typedef std::string String;
+
+} // namespace scripter

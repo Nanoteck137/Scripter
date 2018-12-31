@@ -23,9 +23,10 @@
  */
 #pragma once
 
-#include <string>
+#include "scripter/Common.h"
+#include "scripter/Module.h"
 
-#include "Module.h"
+#include <string>
 
 namespace scripter {
 

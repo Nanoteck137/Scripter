@@ -23,10 +23,11 @@
  */
 #pragma once
 
-#include <v8.h>
+#include "scripter/Common.h"
+#include "scripter/Engine.h"
+#include "scripter/Module.h"
 
-#include "Engine.h"
-#include "Module.h"
+#include <v8.h>
 
 namespace scripter {
 

@@ -23,6 +23,8 @@
  */
 #pragma once
 
+#include "scripter/Common.h"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 

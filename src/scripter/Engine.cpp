@@ -24,9 +24,6 @@
 
 #include "Engine.h"
 
-#include <libplatform/libplatform.h>
-#include <v8.h>
-
 #include "NativeModuleImporter.h"
 
 namespace scripter {

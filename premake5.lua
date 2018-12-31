@@ -15,12 +15,14 @@ project "Scripter"
   filter "system:linux"
     toolset "clang"
     
-    includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/scripter/" }
+    includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/" }
     libdirs { "vendor/v8/libs" }
     
     links { "v8_monolith", "pthread" }
 
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
+
+    defines { "SCRIPTER_PLATFORM_LINUX" }
 
   filter "configurations:Debug"
     defines { "DEBUG" }
@@ -46,6 +48,7 @@ project "TestProgram"
     includedirs { "src/", "vendor/v8/include", "vendor/spdlog/include" }
     links { "Scripter", "dl" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
+    defines { "SCRIPTER_PLATFORM_LINUX" }
 
   filter "configurations:Debug"
     defines { "DEBUG" }
@@ -71,6 +74,8 @@ project "Test"
     
     includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
+
+    defines { "SCRIPTER_PLATFORM_LINUX" }
 
   filter "configurations:Debug"
     defines { "DEBUG" }

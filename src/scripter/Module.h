@@ -23,13 +23,14 @@
  */
 #pragma once
 
+#include "scripter/Common.h"
+#include "scripter/Engine.h"
+
 #include <string>
 #include <unordered_map>
 #include <functional>
 
 #include <v8.h>
-
-#include "Engine.h"
 
 #define JSFUNC(name)                                                           \
     void JSFunc_##name(const v8::FunctionCallbackInfo<v8::Value>& args)

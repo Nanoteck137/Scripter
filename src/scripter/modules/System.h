@@ -23,7 +23,8 @@
  */
 #pragma once
 
-#include "../Module.h"
+#include "scripter/Common.h"
+#include "scripter/Module.h"
 
 namespace scripter { namespace modules {
 

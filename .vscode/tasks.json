@@ -6,7 +6,7 @@
         {
             "label": "Build: Make",
             "type": "shell",
-            "command": "make clean && make",
+            "command": "make clean && make -j$(python3 -c 'import multiprocessing as mp; print(int(mp.cpu_count() * 1.5))')",
             "problemMatcher":"$gcc",
             "group": {
                 "kind": "build",

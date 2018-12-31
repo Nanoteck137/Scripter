@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src/"
             ],
-            "defines": [],
+            "defines": [ "SCRIPTER_PLATFORM_LINUX" ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
             "cppStandard": "c++17",

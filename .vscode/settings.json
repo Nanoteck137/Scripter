@@ -53,4 +53,11 @@
         "codecvt": "cpp"
     },
 
+
+    "taskButtons.buttons": [
+        {
+            "buttonLabel": "Build",
+            "task": "Build: Make"
+        }
+    ]
 }

@@ -24,13 +24,12 @@
 
 #pragma once
 
-namespace v8 {
-    class Platform;
-} // namespace v8
+#include "scripter/Common.h"
 
 #include <memory>
 #include <unordered_map>
 
+#include <libplatform/libplatform.h>
 #include <v8.h>
 
 namespace scripter {
