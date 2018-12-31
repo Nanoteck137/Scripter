@@ -73,9 +73,7 @@ namespace scripter {
         {
             v8::Local<v8::Value> ex = tryCatch->Exception();
             v8::Local<v8::Message> message = tryCatch->Message();
-
             v8::Local<v8::StackTrace> stackTrace = message->GetStackTrace();
-            SCRIPTER_LOG_INFO("{0}", stackTrace->GetFrameCount());
 
             SCRIPTER_LOG_ERROR("---------------- EXCEPTION ----------------");
 
@@ -85,34 +83,48 @@ namespace scripter {
                     stackTrace->GetFrame(m_Isolate, 0)->GetFunctionName());
                 if (functionName != "")
                 {
-                    SCRIPTER_LOG_ERROR("Function: {0}", functionName);
+                    SCRIPTER_LOG_ERROR("Function - {0}", functionName);
                 }
             }
 
             SCRIPTER_LOG_ERROR(
-                "{0}:{1}",
+                "File - {0}:{1}:{2}",
                 ConvertValueToString(message->GetScriptResourceName()),
                 message->GetLineNumber(m_Isolate->GetCurrentContext())
+                    .ToChecked(),
+                message->GetStartColumn(m_Isolate->GetCurrentContext())
                     .ToChecked());
 
             SCRIPTER_LOG_ERROR(
-                "Code: {0}",
+                "Code - {0}",
                 ConvertValueToString(
                     message->GetSourceLine(m_Isolate->GetCurrentContext())
                         .ToLocalChecked()));
 
-            SCRIPTER_LOG_ERROR("{0}", ConvertValueToString(ex));
+            SCRIPTER_LOG_ERROR("Message - {0}", ConvertValueToString(ex));
 
-            SCRIPTER_LOG_ERROR("Stacktrace:");
+            SCRIPTER_LOG_ERROR("-- Stacktrace --");
             for (int i = 0; i < stackTrace->GetFrameCount(); i++)
             {
                 v8::Local<v8::StackFrame> frame =
                     stackTrace->GetFrame(m_Isolate, i);
-                SCRIPTER_LOG_ERROR(
-                    "\tFunction: {0} - {1}:{2}",
-                    ConvertValueToString(frame->GetFunctionName()),
-                    ConvertValueToString(frame->GetScriptName()),
-                    frame->GetLineNumber());
+
+                std::string function =
+                    ConvertValueToString(frame->GetFunctionName());
+                std::string scriptName =
+                    ConvertValueToString(frame->GetScriptName());
+                int lineNumber = frame->GetLineNumber();
+                int columnNumber = frame->GetColumn();
+                if (function == "")
+                {
+                    SCRIPTER_LOG_ERROR("\tat {0}:{1}:{2}", scriptName,
+                                       lineNumber, columnNumber);
+                }
+                else
+                {
+                    SCRIPTER_LOG_ERROR("\tat {0} ({1}:{2}:{3})", function,
+                                       scriptName, lineNumber, columnNumber);
+                }
             }
 
             SCRIPTER_LOG_ERROR("-------------------------------------------");
