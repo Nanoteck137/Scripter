@@ -132,8 +132,6 @@ int main(int argc, const char** argv)
 
     Engine* engine = new Engine();
 
-    SCRIPTER_ASSERT(false, "Hello World");
-
     v8::Isolate* isolate = engine->GetIsolate();
 
     engine->StartIsolate();
