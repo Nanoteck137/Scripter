@@ -34,6 +34,11 @@
 
 namespace scripter {
 
+    /**
+     * Engine
+     *
+     * Wrapper around V8's isolate object but its has some helpers too.
+     */
     class Engine
     {
     private:
@@ -47,22 +52,56 @@ namespace scripter {
         Engine();
         ~Engine();
 
+        /**
+         * Starts this instance of the isolate
+         */
         void StartIsolate();
+
+        /**
+         * Ends this instance of the isolate
+         */
         void EndIsolate();
 
+        /**
+         * Wrapper around ThrowException in the isolate
+         */
         void ThrowException(const char* format, ...);
 
+        /**
+         * Prints an object and its properties
+         */
         void PrintObject(v8::Local<v8::Context> context,
                          v8::Local<v8::Object> object);
+
+        /**
+         * Prints a value
+         */
         void PrintValue(v8::Local<v8::Value> value);
 
+        /**
+         * A wrapper to create a javascript string
+         */
         v8::Local<v8::String> CreateString(const std::string& value);
+
+        /**
+         * A wrapper to create a javascript string
+         */
         v8::Local<v8::String> CreateString(const char* value);
 
+        /**
+         * Returns the V8 isolate
+         */
         v8::Isolate* GetIsolate() const { return m_Isolate; }
 
     public:
+        /**
+         * Initializes the V8 library and some other systems ex. logger
+         */
         static void InitializeV8(const char* execPath);
+        
+        /**
+         * Deinitializes the V8 library and some other systems
+         */
         static void DeinitializeV8();
     };
 

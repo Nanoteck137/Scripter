@@ -27,13 +27,23 @@
 #include <string>
 
 #ifdef SCRIPTER_PLATFORM_LINUX
+
+/**
+ * A macro to trap the debugger
+ */
 #define SCRIPTER_TRAP_DEBUGGER __asm("int $3")
+
 #else
+
 #error Unsupported Platform
+
 #endif
 
 namespace scripter {
 
+    /**
+     * Some typedefs for some types
+     */
     typedef int8_t int8;
     typedef int16_t int16;
     typedef int32_t int32;

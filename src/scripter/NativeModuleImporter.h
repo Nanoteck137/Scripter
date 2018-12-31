@@ -30,6 +30,15 @@
 
 namespace scripter {
 
+    /**
+     * NativeModuleImporter
+     *
+     * This is a importer for native modules and handles all the "low-level"
+     * details.
+     *
+     * This is a singleton pattern so theres always just one instance of this
+     * class and its initialized when the V8 is initalized.
+     */
     class NativeModuleImporter
     {
     public:
@@ -48,9 +57,17 @@ namespace scripter {
     public:
         ~NativeModuleImporter();
 
+        /**
+         * Finds and imports a native module a ".so" or a ".dll" file.
+         * @param engine
+         * @param moduleName the name of the module to find
+         */
         Module* ImportModule(Engine* engine, const std::string& moduleName);
 
     public:
+        /**
+         * Returns the instance of this class
+         */
         static NativeModuleImporter* Get();
 
     private:

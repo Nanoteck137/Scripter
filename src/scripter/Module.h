@@ -113,6 +113,12 @@
 
 namespace scripter {
 
+    /**
+     * Module
+     *
+     * This is a module interface to represent a javascript module, this is not
+     * the same as a ES6 module or Nodejs module but its has the same purpose
+     */
     class Module
     {
     public:

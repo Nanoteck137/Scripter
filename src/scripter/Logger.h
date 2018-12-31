@@ -73,6 +73,11 @@
 
 namespace scripter {
 
+    /**
+     * Logger
+     *
+     * A singleton pattern class to handle all the spdlogs
+     */
     class Logger
     {
     private:
@@ -86,19 +91,35 @@ namespace scripter {
     public:
         ~Logger();
 
+        /**
+         * Initializes the singleton
+         */
         static void Initialize();
+
+        /**
+         * Deinitializes the singleton
+         */
         static void Deinitialize();
 
+        /**
+         * Returns the scripter logger
+         */
         static std::shared_ptr<spdlog::logger>& GetScripterLogger()
         {
             return s_ScripterLogger;
         }
 
+        /**
+         * Returns the javascript logger
+         */
         static std::shared_ptr<spdlog::logger>& GetJSLogger()
         {
             return s_JSLogger;
         }
 
+        /**
+         * Returns the module logger
+         */
         static std::shared_ptr<spdlog::logger>& GetModuleLogger()
         {
             return s_ModuleLogger;

@@ -28,6 +28,11 @@
 
 namespace scripter { namespace modules {
 
+    /**
+     * System
+     *
+     * This is a system module
+     */
     class System : public Module
     {
     private:

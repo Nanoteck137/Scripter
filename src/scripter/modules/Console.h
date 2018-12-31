@@ -28,6 +28,11 @@
 
 namespace scripter { namespace modules {
 
+    /**
+     * Console
+     *
+     * A Console module to print to the console
+     */
     class Console : public Module
     {
     private:

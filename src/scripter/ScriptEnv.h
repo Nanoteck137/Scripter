@@ -31,6 +31,13 @@
 
 namespace scripter {
 
+    /**
+     * ScriptEnv
+     *
+     * This is a wrapper around V8's context, a script enviroment where you can
+     * run scripts
+     *
+     */
     class ScriptEnv
     {
     private:
@@ -39,17 +46,46 @@ namespace scripter {
             m_Context;
 
     public:
+        /**
+         * Constructor
+         * @param engine the engine this script environment should use
+         * @param modules modules this script environment can access
+         * @param moduleCount how many modules are there
+         */
         ScriptEnv(Engine* engine, Module* modules[], uint32_t moduleCount);
+
         ~ScriptEnv();
 
+        /**
+         * Makes this script environment active
+         */
         void Enable();
+
+        /**
+         * Deactives this script environment
+         */
         void Disable();
 
+        /**
+         * Imports an module
+         * @param module the module to import
+         */
         void ImportModule(Module* module);
 
+        /**
+         * Compiles and runs a javascript script
+         */
         v8::MaybeLocal<v8::Value> CompileAndRun(const std::string& code);
+
+        /**
+         * Returns the V8 Context.
+         */
         v8::Local<v8::Context> GetContext();
 
+        /**
+         * Returns a handle to an global function in the enviroment.
+         * @param name the name of the function
+         */
         v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
     };
 
