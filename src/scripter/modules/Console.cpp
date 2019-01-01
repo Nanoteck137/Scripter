@@ -32,9 +32,9 @@ namespace scripter { namespace modules {
         JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
-        std::string result;
+        String result;
 
-        for (int i = 0; i < args.Length(); i++)
+        for (int32 i = 0; i < args.Length(); i++)
         {
             v8::String::Utf8Value str(isolate, args[i]);
             result.append(*str);
@@ -51,9 +51,9 @@ namespace scripter { namespace modules {
         JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
-        std::string result;
+        String result;
 
-        for (int i = 0; i < args.Length(); i++)
+        for (int32 i = 0; i < args.Length(); i++)
         {
             v8::String::Utf8Value str(isolate, args[i]);
             result.append(*str);
@@ -70,9 +70,9 @@ namespace scripter { namespace modules {
         JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
-        std::string result;
+        String result;
 
-        for (int i = 0; i < args.Length(); i++)
+        for (int32 i = 0; i < args.Length(); i++)
         {
             v8::String::Utf8Value str(isolate, args[i]);
             result.append(*str);
@@ -89,9 +89,9 @@ namespace scripter { namespace modules {
         JS_FUNC_ISOLATE();
         v8::HandleScope handleScope(isolate);
 
-        std::string result;
+        String result;
 
-        for (int i = 0; i < args.Length(); i++)
+        for (int32 i = 0; i < args.Length(); i++)
         {
             v8::String::Utf8Value str(isolate, args[i]);
             result.append(*str);
@@ -113,8 +113,8 @@ namespace scripter { namespace modules {
         bool assertCondition = args[0]->BooleanValue(isolate);
         if (!assertCondition)
         {
-            std::string result;
-            for (int i = 1; i < args.Length(); i++)
+            String result;
+            for (int32 i = 1; i < args.Length(); i++)
             {
                 v8::String::Utf8Value str(isolate, args[i]);
                 result.append(*str);
@@ -138,6 +138,6 @@ namespace scripter { namespace modules {
 
     Console::~Console() {}
 
-    std::string Console::GetPackageName() { return "console"; }
+    String Console::GetPackageName() { return "console"; }
 
 }} // namespace scripter::modules

@@ -131,7 +131,7 @@ namespace scripter {
 
     protected:
         Engine* m_Engine;
-        std::unordered_map<std::string, v8::FunctionCallback> m_Functions;
+        std::unordered_map<String, v8::FunctionCallback> m_Functions;
 
     protected:
         Module(Engine* engine);
@@ -141,7 +141,7 @@ namespace scripter {
 
         v8::Local<v8::ObjectTemplate> GenerateObject();
 
-        virtual std::string GetPackageName() = 0;
+        virtual String GetPackageName() = 0;
     };
 
 } // namespace scripter

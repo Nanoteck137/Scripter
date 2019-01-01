@@ -46,7 +46,7 @@ namespace scripter {
 
         v8::String::Utf8Value moduleNameStr(isolate,
                                             args[0]->ToString(isolate));
-        std::string moduleName = std::string(*moduleNameStr);
+        String moduleName = std::string(*moduleNameStr);
 
         Module* module =
             NativeModuleImporter::Get()->ImportModule(engine, moduleName);
@@ -168,7 +168,7 @@ namespace scripter {
         return handleScope.Escape(m_Context.Get(m_Engine->GetIsolate()));
     }
 
-    v8::MaybeLocal<v8::Function> ScriptEnv::GetFunction(const std::string& name)
+    v8::MaybeLocal<v8::Function> ScriptEnv::GetFunction(const String& name)
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
 
@@ -181,8 +181,8 @@ namespace scripter {
 
         if (function.IsEmpty())
         {
-            printf(
-                "Error - ScriptEnv::GetFunction: Could not find function '%s'\n",
+            SCRIPTER_LOG_ERROR(
+                "ScriptEnv::GetFunction: Could not find function '{0}'",
                 name.c_str());
             return v8::MaybeLocal<v8::Function>();
         }

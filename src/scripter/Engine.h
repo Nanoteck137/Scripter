@@ -87,7 +87,7 @@ namespace scripter {
         /**
          * A wrapper to create a javascript string
          */
-        v8::Local<v8::String> CreateString(const std::string& value);
+        v8::Local<v8::String> CreateString(const String& value);
 
         /**
          * A wrapper to create a javascript string

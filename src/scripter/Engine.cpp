@@ -170,7 +170,7 @@ namespace scripter {
         SCRIPTER_LOG_INFO("-----------\n");
     }
 
-    v8::Local<v8::String> Engine::CreateString(const std::string& value)
+    v8::Local<v8::String> Engine::CreateString(const String& value)
     {
         return CreateString(value.c_str());
     }

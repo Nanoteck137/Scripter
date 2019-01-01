@@ -48,8 +48,8 @@ namespace scripter {
         static NativeModuleImporter* s_Instance;
         typedef Module* (*CreateModuleFunc)(Engine*);
 
-        std::unordered_map<std::string, void*> m_Handles;
-        std::vector<std::string> m_SearchPaths;
+        std::unordered_map<String, void*> m_Handles;
+        std::vector<String> m_SearchPaths;
 
     private:
         NativeModuleImporter();
@@ -62,7 +62,7 @@ namespace scripter {
          * @param engine
          * @param moduleName the name of the module to find
          */
-        Module* ImportModule(Engine* engine, const std::string& moduleName);
+        Module* ImportModule(Engine* engine, const String& moduleName);
 
     public:
         /**

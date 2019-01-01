@@ -40,7 +40,7 @@ namespace scripter { namespace modules {
         System(Engine* engine);
         ~System();
 
-        virtual std::string GetPackageName() override;
+        virtual String GetPackageName() override;
     };
 
 }} // namespace scripter::modules

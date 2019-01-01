@@ -23,6 +23,8 @@
  */
 #include "NativeModuleImporter.h"
 
+#include "scripter/Logger.h"
+
 #include <dlfcn.h>
 
 namespace scripter {
@@ -38,7 +40,8 @@ namespace scripter {
     {
         for (auto it = m_Handles.begin(); it != m_Handles.end(); it++)
         {
-            printf("Unloading native module: %s\n", it->first.c_str());
+            SCRIPTER_LOG_INFO("Unloading native module: {0}",
+                              it->first.c_str());
 
             dlclose(it->second);
             it->second = nullptr;
@@ -46,7 +49,7 @@ namespace scripter {
     }
 
     Module* NativeModuleImporter::ImportModule(Engine* engine,
-                                               const std::string& moduleName)
+                                               const String& moduleName)
     {
         void* handle = nullptr;
         bool exists = false;
@@ -58,9 +61,9 @@ namespace scripter {
         }
         else
         {
-            for (const std::string& path : m_SearchPaths)
+            for (const String& path : m_SearchPaths)
             {
-                std::string modulePath = path;
+                String modulePath = path;
 
                 if (modulePath != "" &&
                     modulePath[modulePath.length() - 1] != '/')
@@ -77,7 +80,8 @@ namespace scripter {
                 handle = dlopen(modulePath.c_str(), RTLD_NOW);
                 if (handle)
                 {
-                    printf("Loaded native module: %s\n", moduleName.c_str());
+                    SCRIPTER_LOG_INFO("Loaded native module: {0}",
+                                      moduleName.c_str());
                     exists = false;
                     break;
                 }

@@ -50,7 +50,8 @@
         "numeric": "cpp",
         "cinttypes": "cpp",
         "hash_map": "cpp",
-        "codecvt": "cpp"
+        "codecvt": "cpp",
+        "csignal": "cpp"
     },
 
 

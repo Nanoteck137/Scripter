@@ -84,7 +84,7 @@ namespace scripter {
          * Returns a handle to an global function in the enviroment.
          * @param name the name of the function
          */
-        v8::MaybeLocal<v8::Function> GetFunction(const std::string& name);
+        v8::MaybeLocal<v8::Function> GetFunction(const String& name);
     };
 
 } // namespace scripter

@@ -64,10 +64,6 @@ namespace scripter {
         realpath(path.c_str(), buffer);
         String result(buffer);
 
-        /*char* file = basename(path.c_str());
-        result.append(1, '/');
-        result.append(file);*/
-
         return result;
     }
 

@@ -23,6 +23,8 @@
  */
 #include "System.h"
 
+#include "scripter/Logger.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,15 +50,15 @@ namespace scripter { namespace modules {
         v8::Local<v8::String> str =
             args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
 
-        std::string file = engine->ConvertValueToString(str);
-        int flags =
+        String file = engine->ConvertValueToString(str);
+        int32 flags =
             args[1]->Int32Value(isolate->GetCurrentContext()).ToChecked();
 
         mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-        int result = open(file.c_str(), flags, mode);
+        int32 result = open(file.c_str(), flags, mode);
         if (result == -1)
         {
-            printf("Error open: %s\n", strerror(errno));
+            MODULE_LOG_ERROR("Error open: {0}", strerror(errno));
         }
 
         args.GetReturnValue().Set(result);
@@ -73,12 +75,13 @@ namespace scripter { namespace modules {
         JS_CHECK_ARG(JS_TYPE_INT32, 0);
         JS_CHECK_ARG(JS_TYPE_STRING, 1);
 
-        int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+        int32 fd =
+            args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
         v8::Local<v8::String> str =
             args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked();
 
-        std::string content = engine->ConvertValueToString(str);
-        int result = write(fd, content.c_str(), content.length());
+        String content = engine->ConvertValueToString(str);
+        int32 result = write(fd, content.c_str(), content.length());
 
         if (result == -1)
         {
@@ -97,7 +100,8 @@ namespace scripter { namespace modules {
         JS_CHECK_ARGS_LENGTH(1);
         JS_CHECK_ARG(JS_TYPE_INT32, 0);
 
-        int fd = args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
+        int32 fd =
+            args[0]->Int32Value(isolate->GetCurrentContext()).ToChecked();
         close(fd);
     }
 
@@ -113,6 +117,6 @@ namespace scripter { namespace modules {
 
     System::~System() {}
 
-    std::string System::GetPackageName() { return "system"; }
+    String System::GetPackageName() { return "system"; }
 
 }} // namespace scripter::modules
