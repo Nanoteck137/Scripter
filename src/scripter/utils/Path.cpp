@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "scripter/utils/File.h"
+#include "scripter/utils/Path.h"
 
 #include "scripter/Logger.h"
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <linux/limits.h>
 
 namespace scripter {
 
-    String File::ReadFile(const String& filePath)
+    static char buffer[PATH_MAX] = {};
+
+    String Path::GetFileName(const String& path)
     {
-        FILE* file = fopen(filePath.c_str(), "rt");
-        SCRIPTER_ASSERT(file);
+        String result = path.substr(path.find_last_of('/') + 1);
+        return result;
+    }
 
-        if (!file)
-        {
-            SCRIPTER_LOG_ERROR("Could not open file '{0}'", filePath);
-            return String();
-        }
+    String Path::GetFileExtension(const String& path)
+    {
+        String result = path.substr(path.find_last_of(".") + 1);
+        return result;
+    }
 
-        fseek(file, 0, SEEK_END);
-        int32 length = ftell(file);
-        fseek(file, 0, SEEK_SET);
+    String Path::GetFullPath(const String& path)
+    {
+        memset(buffer, 0, PATH_MAX);
 
-        String result(length, 0);
-
-        fread(&result[0], 1, length, file);
-        fclose(file);
+        realpath(path.c_str(), buffer);
+        String result(buffer);
 
         return result;
     }

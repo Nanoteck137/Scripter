@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,38 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "scripter/utils/File.h"
+#pragma once
 
-#include "scripter/Logger.h"
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "scripter/Common.h"
 
 namespace scripter {
 
-    String File::ReadFile(const String& filePath)
+    class Path
     {
-        FILE* file = fopen(filePath.c_str(), "rt");
-        SCRIPTER_ASSERT(file);
+    private:
+        Path();
 
-        if (!file)
-        {
-            SCRIPTER_LOG_ERROR("Could not open file '{0}'", filePath);
-            return String();
-        }
-
-        fseek(file, 0, SEEK_END);
-        int32 length = ftell(file);
-        fseek(file, 0, SEEK_SET);
-
-        String result(length, 0);
-
-        fread(&result[0], 1, length, file);
-        fclose(file);
-
-        return result;
-    }
+    public:
+        static String GetFileName(const String& path);
+        static String GetFileExtension(const String& path);
+        static String GetFullPath(const String& path);
+    };
 
 } // namespace scripter
