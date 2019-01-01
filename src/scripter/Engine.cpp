@@ -22,12 +22,10 @@
  * SOFTWARE.
  */
 
-#include "Engine.h"
+#include "scripter/Engine.h"
 
 #include "scripter/Logger.h"
 #include "scripter/NativeModuleImporter.h"
-
-#include <v8-internal.h>
 
 namespace scripter {
 
@@ -40,6 +38,7 @@ namespace scripter {
         m_Isolate = v8::Isolate::New(m_IsolateCreateParams);
 
         m_Isolate->SetData(0, this);
+        m_Isolate->SetCaptureStackTraceForUncaughtExceptions(true);
     }
 
     Engine::~Engine()
@@ -112,10 +111,13 @@ namespace scripter {
 
                 std::string function =
                     ConvertValueToString(frame->GetFunctionName());
+
                 std::string scriptName =
                     ConvertValueToString(frame->GetScriptName());
+
                 int lineNumber = frame->GetLineNumber();
                 int columnNumber = frame->GetColumn();
+
                 if (function == "")
                 {
                     SCRIPTER_LOG_ERROR("\tat {0}:{1}:{2}", scriptName,
@@ -167,7 +169,7 @@ namespace scripter {
         v8::String::Utf8Value str(m_Isolate, value);
         SCRIPTER_LOG_INFO("{0}", *str);
 
-        SCRIPTER_LOG_INFO("-----------\n");
+        SCRIPTER_LOG_INFO("---------------");
     }
 
     v8::Local<v8::String> Engine::CreateString(const String& value)

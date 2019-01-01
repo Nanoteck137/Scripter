@@ -35,8 +35,6 @@
 #include <scripter/Engine.h>
 #include <scripter/ScriptEnv.h>
 
-#include <scripter/utils/File.h>
-
 #include <scripter/modules/System.h>
 #include <scripter/modules/Console.h>
 
@@ -49,8 +47,6 @@ int main(int argc, const char** argv)
     Engine* engine = new Engine();
 
     v8::Isolate* isolate = engine->GetIsolate();
-    // isolate->SetCaptureStackTraceForUncaughtExceptions
-    isolate->SetCaptureStackTraceForUncaughtExceptions(true);
 
     engine->StartIsolate();
     {
@@ -67,17 +63,11 @@ int main(int argc, const char** argv)
         env.ImportModule(systemModule);
         env.ImportModule(consoleModule);
 
-        env.CompileAndRun("scripts/test.js");
+        env.CompileAndRun("tests/test.js");
 
         auto function = env.GetFunction("main").ToLocalChecked();
 
-        v8::Local<v8::Value> args[] = {
-            engine->CreateString(File::GetFullPath("scripts/test.js"))};
-
-        v8::Local<v8::Array> array = v8::Array::New(isolate, args, 1);
-        v8::Local<v8::Value> funcArgs[] = {array};
-
-        function->Call(v8::Null(isolate), 1, funcArgs);
+        function->Call(v8::Null(isolate), 0, {});
         engine->CheckTryCatch(&tryCatch);
 
         env.Disable();

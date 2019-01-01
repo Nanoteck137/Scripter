@@ -3,8 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/src/"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/vendor/v8/include/",
+                "${workspaceFolder}/vendor/spdlog/include/"
             ],
             "defines": [ "SCRIPTER_PLATFORM_LINUX" ],
             "compilerPath": "/usr/bin/clang",

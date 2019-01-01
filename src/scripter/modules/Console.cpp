@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "Console.h"
+#include "scripter/modules/Console.h"
 
-#include "../Logger.h"
+#include "scripter/Logger.h"
 
 namespace scripter { namespace modules {
 

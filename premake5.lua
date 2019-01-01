@@ -10,12 +10,12 @@ project "Scripter"
   targetdir "bin/%{cfg.buildcfg}"
   objdir "bin/%{cfg.buildcfg}/obj/%{prj.name}"
 
-  files { "src/scripter/**.h", "src/scripter/**.cpp" }
+  files { "include/scripter/**.h", "src/scripter/**.cpp" }
 
   filter "system:linux"
     toolset "clang"
     
-    includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/" }
+    includedirs { "src/", "include/", "vendor/v8/include", "vendor/spdlog/include" }
     libdirs { "vendor/v8/libs" }
     
     links { "v8_monolith", "pthread" }
@@ -45,7 +45,7 @@ project "TestProgram"
 
   filter "system:linux"
     toolset "clang"
-    includedirs { "src/", "vendor/v8/include", "vendor/spdlog/include" }
+    includedirs { "include/", "vendor/v8/include", "vendor/spdlog/include" }
     links { "Scripter", "dl" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
     defines { "SCRIPTER_PLATFORM_LINUX" }
@@ -72,7 +72,7 @@ project "Test"
   filter "system:linux"
     toolset "clang"
     
-    includedirs { "vendor/v8/include", "vendor/spdlog/include", "src/" }
+    includedirs { "include/", "vendor/v8/include", "vendor/spdlog/include" }
     buildoptions { "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-result"}
 
     defines { "SCRIPTER_PLATFORM_LINUX" }
