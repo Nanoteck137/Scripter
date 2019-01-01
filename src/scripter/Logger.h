@@ -32,7 +32,8 @@
     if (!(x))                                                                  \
     {                                                                          \
         SCRIPTER_LOG_CRITICAL("ASSERTION FAILED:");                            \
-        SCRIPTER_LOG_CRITICAL("File: {0}:{1}", __FUNCTION__, __LINE__);        \
+        SCRIPTER_LOG_CRITICAL("File: {0}:{1} in function '{2}'", __FILE__,     \
+                              __LINE__, __FUNCTION__);                         \
         SCRIPTER_LOG_CRITICAL("Condition: {0}", #x);                           \
         SCRIPTER_LOG_CRITICAL("Message: " __VA_ARGS__);                        \
         SCRIPTER_TRAP_DEBUGGER;                                                \
