@@ -55,4 +55,10 @@ namespace scripter {
         return result;
     }
 
+    bool File::Exists(const String& filePath)
+    {
+        struct stat buffer;
+        return (stat(filePath.c_str(), &buffer) == 0);
+    }
+
 } // namespace scripter

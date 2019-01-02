@@ -33,8 +33,13 @@ namespace scripter {
     private:
         String m_Name;
 
+        v8::Persistent<v8::ObjectTemplate,
+                       v8::CopyablePersistentTraits<v8::ObjectTemplate>>
+            m_ObjectTemplate;
+
     public:
-        JavascriptModule(Engine* engine, const String& name);
+        JavascriptModule(Engine* engine, const String& name,
+                         v8::Persistent<v8::ObjectTemplate> objTemplate);
         ~JavascriptModule();
 
         virtual v8::Local<v8::ObjectTemplate> GenerateObject() override;

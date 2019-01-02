@@ -37,12 +37,21 @@ namespace scripter {
     String Path::GetFileName(const String& path)
     {
         String result = path.substr(path.find_last_of('/') + 1);
+
         return result;
     }
 
     String Path::GetFileExtension(const String& path)
     {
-        String result = path.substr(path.find_last_of(".") + 1);
+        String result = path.substr(path.find_last_of('.') + 1);
+
+        return result;
+    }
+
+    String Path::GetDirectoryPath(const String& path)
+    {
+        String result = path.substr(0, path.find_last_of('/'));
+
         return result;
     }
 
@@ -52,6 +61,16 @@ namespace scripter {
 
         realpath(path.c_str(), buffer);
         String result(buffer);
+
+        return result;
+    }
+
+    String Path::Append(const String& path, const String& path2)
+    {
+        String result = path;
+        if (path[path.length() - 1] != '/')
+            result.append(1, '/');
+        result.append(path2);
 
         return result;
     }

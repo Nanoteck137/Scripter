@@ -25,16 +25,21 @@
 
 namespace scripter {
 
-    JavascriptModule::JavascriptModule(Engine* engine, const String& name)
+    JavascriptModule::JavascriptModule(
+        Engine* engine, const String& name,
+        v8::Persistent<v8::ObjectTemplate> objTemplate)
         : Module(engine), m_Name(name)
     {
+        m_ObjectTemplate = objTemplate;
     }
 
-    JavascriptModule::~JavascriptModule() {}
+    JavascriptModule::~JavascriptModule() { m_ObjectTemplate.Reset(); }
 
     v8::Local<v8::ObjectTemplate> JavascriptModule::GenerateObject()
     {
-        return v8::Local<v8::ObjectTemplate>();
+        v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
+
+        return handleScope.Escape(m_ObjectTemplate.Get(m_Engine->GetIsolate()));
     }
 
     String JavascriptModule::GetPackageName() { return m_Name; }

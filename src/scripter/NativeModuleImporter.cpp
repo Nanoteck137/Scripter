@@ -54,6 +54,9 @@ namespace scripter {
         void* handle = nullptr;
         bool exists = false;
 
+        // TODO(patrik): Add a search path relative to the script path like in
+        // JavascriptModuleImporter
+
         if (m_Handles.find(moduleName) != m_Handles.end())
         {
             handle = m_Handles[moduleName];

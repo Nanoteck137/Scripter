@@ -35,7 +35,9 @@ namespace scripter {
     public:
         static String GetFileName(const String& path);
         static String GetFileExtension(const String& path);
+        static String GetDirectoryPath(const String& path);
         static String GetFullPath(const String& path);
+        static String Append(const String& path, const String& path2);
     };
 
 } // namespace scripter

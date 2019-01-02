@@ -34,6 +34,7 @@ namespace scripter {
 
     public:
         static String ReadFile(const String& filePath);
+        static bool Exists(const String& filePath);
     };
 
 } // namespace scripter

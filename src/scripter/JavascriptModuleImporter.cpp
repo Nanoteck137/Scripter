@@ -23,6 +23,13 @@
  */
 #include "scripter/JavascriptModuleImporter.h"
 
+#include "scripter/Logger.h"
+
+#include "scripter/utils/File.h"
+#include "scripter/utils/Path.h"
+
+#include "scripter/ScriptEnv.h"
+
 namespace scripter {
 
     JavascriptModuleImporter* JavascriptModuleImporter::s_Instance;
@@ -31,8 +38,39 @@ namespace scripter {
     JavascriptModuleImporter::~JavascriptModuleImporter() {}
 
     Module* JavascriptModuleImporter::ImportModule(Engine* engine,
-                                                   const String& moduleName)
+                                                   const String& moduleName,
+                                                   const String& scriptPath)
     {
+        // TODO(patrik): Make this search for other places
+        String directory = Path::GetDirectoryPath(scriptPath);
+        String modulePath = Path::Append(directory, moduleName);
+        modulePath.append(".js");
+
+        if (File::Exists(modulePath))
+        {
+            return LoadModule(engine, modulePath);
+        }
+
+        return nullptr;
+    }
+
+    Module* JavascriptModuleImporter::LoadModule(Engine* engine,
+                                                 const String& modulePath)
+    {
+        v8::HandleScope scope(engine->GetIsolate());
+
+        ScriptEnv* env = new ScriptEnv(engine);
+        env->Enable();
+
+        env->CompileAndRun(modulePath);
+
+        v8::Local<v8::Context> context = env->GetContext();
+
+        env->Disable();
+
+        // NOTE(patrik): Do we need to cache the whole enviroment??
+        delete env;
+
         return nullptr;
     }
 
@@ -45,6 +83,7 @@ namespace scripter {
     {
         s_Instance = new JavascriptModuleImporter();
     }
+
     void JavascriptModuleImporter::Deinitialize()
     {
         if (s_Instance)

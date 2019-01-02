@@ -43,7 +43,11 @@ namespace scripter {
     public:
         static JavascriptModuleImporter* Get();
 
-        Module* ImportModule(Engine* engine, const String& moduleName);
+        Module* ImportModule(Engine* engine, const String& moduleName,
+                             const String& scriptPath);
+
+    private:
+        Module* LoadModule(Engine* engine, const String& modulePath);
 
     private:
         static void Initialize();

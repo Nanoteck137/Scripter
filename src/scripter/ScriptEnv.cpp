@@ -24,6 +24,8 @@
 #include "scripter/ScriptEnv.h"
 
 #include "scripter/NativeModuleImporter.h"
+#include "scripter/JavascriptModuleImporter.h"
+
 #include "scripter/Logger.h"
 
 #include "scripter/utils/File.h"
@@ -49,14 +51,28 @@ namespace scripter {
         String moduleName =
             engine->ConvertValueToString(args[0]->ToString(isolate));
 
-        Module* module =
-            NativeModuleImporter::Get()->ImportModule(engine, moduleName);
+        Module* module = nullptr;
 
+        v8::Local<v8::StackTrace> stackTrace =
+            v8::StackTrace::CurrentStackTrace(isolate, 1,
+                                              v8::StackTrace::kScriptName);
+
+        String scriptPath = engine->ConvertValueToString(
+            stackTrace->GetFrame(isolate, 0)->GetScriptName());
+
+        module = JavascriptModuleImporter::Get()->ImportModule(
+            engine, moduleName, scriptPath);
         if (!module)
         {
-            engine->ThrowException("Could not load module %s",
-                                   moduleName.c_str());
-            return;
+            module =
+                NativeModuleImporter::Get()->ImportModule(engine, moduleName);
+
+            if (!module)
+            {
+                engine->ThrowException("Could not load module %s",
+                                       moduleName.c_str());
+                return;
+            }
         }
 
         if (loadToGlobal)
