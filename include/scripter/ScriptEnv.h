@@ -65,6 +65,13 @@ namespace scripter {
         void Disable();
 
         /**
+         * Sets a global variable
+         */
+        void SetGlobal(const String& name, v8::Local<v8::Value> value);
+
+        v8::MaybeLocal<v8::Value> GetGlobal(const String& name);
+
+        /**
          * Imports an module
          * @param module the module to import
          */

@@ -121,6 +121,23 @@ namespace scripter {
 
     void ScriptEnv::Disable() { m_Context.Get(m_Engine->GetIsolate())->Exit(); }
 
+    void ScriptEnv::SetGlobal(const String& name, v8::Local<v8::Value> value)
+    {
+        v8::HandleScope handleScope(m_Engine->GetIsolate());
+
+        v8::Local<v8::Context> context = GetContext();
+        context->Global()->Set(m_Engine->CreateString(name), value);
+    }
+
+    v8::MaybeLocal<v8::Value> ScriptEnv::GetGlobal(const String& name)
+    {
+        v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
+
+        v8::Local<v8::Context> context = GetContext();
+        return handleScope.EscapeMaybe(
+            context->Global()->Get(context, m_Engine->CreateString(name)));
+    }
+
     void ScriptEnv::ImportModule(Module* module)
     {
         SCRIPTER_ASSERT(module);

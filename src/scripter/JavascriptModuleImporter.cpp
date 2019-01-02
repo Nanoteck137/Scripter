@@ -32,6 +32,30 @@
 
 namespace scripter {
 
+    struct ModuleExports
+    {
+    public:
+        std::vector<
+            v8::Persistent<v8::Value, v8::CopyablePersistentTraits<v8::Value>>>
+            exportedValues;
+    };
+
+    JSFUNC(addExport)
+    {
+        JS_FUNC_ISOLATE_ENGINE();
+
+        v8::HandleScope handleScope(isolate);
+
+        JS_CHECK_ARGS_LENGTH(1);
+
+        ModuleExports* exports =
+            (ModuleExports*)v8::Local<v8::External>::Cast(args.Data())->Value();
+        // TODO(patrik): Change this
+        exports->exportedValues.push_back(
+            v8::Persistent<v8::Value, v8::CopyablePersistentTraits<v8::Value>>(
+                isolate, args[0]));
+    }
+
     JavascriptModuleImporter* JavascriptModuleImporter::s_Instance;
 
     JavascriptModuleImporter::JavascriptModuleImporter() {}
@@ -62,9 +86,33 @@ namespace scripter {
         ScriptEnv* env = new ScriptEnv(engine);
         env->Enable();
 
+        ModuleExports exports = {};
+
+        v8::Local<v8::External> data =
+            v8::External::New(engine->GetIsolate(), &exports);
+
+        v8::Local<v8::Function> function =
+            v8::FunctionTemplate::New(engine->GetIsolate(), JSFunc_addExport,
+                                      data)
+                ->GetFunction(env->GetContext())
+                .ToLocalChecked();
+
+        env->SetGlobal("addExport", function);
+
         env->CompileAndRun(modulePath);
 
-        v8::Local<v8::Context> context = env->GetContext();
+        v8::Local<v8::Function> addFunc = v8::Local<v8::Function>::Cast(
+            exports.exportedValues[0].Get(engine->GetIsolate()));
+
+        v8::Local<v8::Value> args[] = {
+            v8::Integer::New(engine->GetIsolate(), 4),
+            v8::Integer::New(engine->GetIsolate(), 10)};
+        v8::Local<v8::Value> result =
+            addFunc
+                ->Call(env->GetContext(), v8::Null(engine->GetIsolate()), 2,
+                       args)
+                .ToLocalChecked();
+        engine->PrintValue(result);
 
         env->Disable();
 
