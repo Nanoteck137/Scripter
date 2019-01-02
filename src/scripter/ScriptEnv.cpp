@@ -25,7 +25,9 @@
 
 #include "scripter/NativeModuleImporter.h"
 #include "scripter/Logger.h"
+
 #include "scripter/utils/File.h"
+#include "scripter/utils/Path.h"
 
 namespace scripter {
 
@@ -44,9 +46,8 @@ namespace scripter {
             loadToGlobal = args[1]->BooleanValue(isolate);
         }
 
-        v8::String::Utf8Value moduleNameStr(isolate,
-                                            args[0]->ToString(isolate));
-        String moduleName = std::string(*moduleNameStr);
+        String moduleName =
+            engine->ConvertValueToString(args[0]->ToString(isolate));
 
         Module* module =
             NativeModuleImporter::Get()->ImportModule(engine, moduleName);
@@ -125,7 +126,7 @@ namespace scripter {
         v8::EscapableHandleScope handleScope(isolate);
         v8::TryCatch tryCatch(isolate);
 
-        String fullFilePath = File::GetFullPath(filePath);
+        String fullFilePath = Path::GetFullPath(filePath);
         String fileContent = File::ReadFile(fullFilePath);
 
         v8::ScriptOrigin origin(
