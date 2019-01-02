@@ -114,8 +114,11 @@ namespace scripter {
 
     void NativeModuleImporter::Deinitialize()
     {
-        delete s_Instance;
-        s_Instance = nullptr;
+        if (s_Instance)
+        {
+            delete s_Instance;
+            s_Instance = nullptr;
+        }
     }
 
 } // namespace scripter

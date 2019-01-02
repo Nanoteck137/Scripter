@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#pragma once
+
 #include "scripter/Module.h"
 
 namespace scripter {
 
-    Module::Module(Engine* engine) : m_Engine(engine) {}
-    Module::~Module() {}
+    class NativeModule : public Module
+    {
+    protected:
+        std::unordered_map<String, v8::FunctionCallback> m_Functions;
+
+    protected:
+        NativeModule(Engine* engine);
+
+    public:
+        virtual ~NativeModule();
+
+        virtual v8::Local<v8::ObjectTemplate> GenerateObject() override;
+
+        virtual String GetPackageName() override = 0;
+    };
 
 } // namespace scripter

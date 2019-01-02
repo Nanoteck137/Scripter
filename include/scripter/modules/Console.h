@@ -24,7 +24,7 @@
 #pragma once
 
 #include "scripter/Common.h"
-#include "scripter/Module.h"
+#include "scripter/NativeModule.h"
 
 namespace scripter { namespace modules {
 
@@ -33,7 +33,7 @@ namespace scripter { namespace modules {
      *
      * A Console module to print to the console
      */
-    class Console : public Module
+    class Console : public NativeModule
     {
     private:
     public:

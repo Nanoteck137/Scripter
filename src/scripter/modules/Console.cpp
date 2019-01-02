@@ -127,7 +127,7 @@ namespace scripter { namespace modules {
         }
     }
 
-    Console::Console(Engine* engine) : Module(engine)
+    Console::Console(Engine* engine) : NativeModule(engine)
     {
         m_Functions["info"] = JSFunc_info;
         m_Functions["warning"] = JSFunc_warning;

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "scripter/Module.h"
+#include "scripter/NativeModule.h"
 
 namespace scripter {
 
-    Module::Module(Engine* engine) : m_Engine(engine) {}
-    Module::~Module() {}
+    NativeModule::NativeModule(Engine* engine) : Module(engine) {}
+
+    NativeModule::~NativeModule() {}
+
+    v8::Local<v8::ObjectTemplate> NativeModule::GenerateObject()
+    {
+        v8::Isolate* isolate = m_Engine->GetIsolate();
+        v8::EscapableHandleScope handleScope(isolate);
+
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
+        for (auto it = m_Functions.begin(); it != m_Functions.end(); it++)
+        {
+            result->Set(isolate, it->first.c_str(),
+                        v8::FunctionTemplate::New(isolate, it->second));
+        }
+
+        return handleScope.Escape(result);
+    }
 
 } // namespace scripter

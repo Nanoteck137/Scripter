@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#pragma once
+
+#include "scripter/Common.h"
+
 #include "scripter/Module.h"
 
 namespace scripter {
 
-    Module::Module(Engine* engine) : m_Engine(engine) {}
-    Module::~Module() {}
+    class JavascriptModuleImporter
+    {
+    private:
+        static JavascriptModuleImporter* s_Instance;
+
+    private:
+        JavascriptModuleImporter();
+
+    public:
+        ~JavascriptModuleImporter();
+
+    public:
+        static JavascriptModuleImporter* Get();
+
+        Module* ImportModule(Engine* engine, const String& moduleName);
+
+    private:
+        static void Initialize();
+        static void Deinitialize();
+    };
 
 } // namespace scripter

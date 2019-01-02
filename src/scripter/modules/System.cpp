@@ -105,7 +105,7 @@ namespace scripter { namespace modules {
         close(fd);
     }
 
-    System::System(Engine* engine) : Module(engine)
+    System::System(Engine* engine) : NativeModule(engine)
     {
         // TODO(patrik): Need to add the file attributes like FILE_READ
         // FILE_WRITE

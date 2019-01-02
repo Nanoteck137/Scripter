@@ -126,12 +126,8 @@ namespace scripter {
      */
     class Module
     {
-    public:
-        friend class ScriptEnv;
-
     protected:
         Engine* m_Engine;
-        std::unordered_map<String, v8::FunctionCallback> m_Functions;
 
     protected:
         Module(Engine* engine);
@@ -139,7 +135,7 @@ namespace scripter {
     public:
         virtual ~Module();
 
-        v8::Local<v8::ObjectTemplate> GenerateObject();
+        virtual v8::Local<v8::ObjectTemplate> GenerateObject() = 0;
 
         virtual String GetPackageName() = 0;
     };

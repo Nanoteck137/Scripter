@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Patrik M. Rosenström
+ * Copyright (c) 2019 Patrik M. Rosenström
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "scripter/Module.h"
+#include "scripter/JavascriptModule.h"
 
 namespace scripter {
 
-    Module::Module(Engine* engine) : m_Engine(engine) {}
-    Module::~Module() {}
+    JavascriptModule::JavascriptModule(Engine* engine, const String& name)
+        : Module(engine), m_Name(name)
+    {
+    }
+
+    JavascriptModule::~JavascriptModule() {}
+
+    v8::Local<v8::ObjectTemplate> JavascriptModule::GenerateObject()
+    {
+        return v8::Local<v8::ObjectTemplate>();
+    }
+
+    String JavascriptModule::GetPackageName() { return m_Name; }
 
 } // namespace scripter
