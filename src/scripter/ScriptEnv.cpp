@@ -85,10 +85,7 @@ namespace scripter {
         }
         else
         {
-            args.GetReturnValue().Set(
-                module->GenerateObject()
-                    ->NewInstance(isolate->GetCurrentContext())
-                    .ToLocalChecked());
+            args.GetReturnValue().Set(module->GenerateObject());
         }
     }
 
@@ -147,9 +144,8 @@ namespace scripter {
         v8::Local<v8::Object> globals =
             v8::Local<v8::Object>::Cast(context->Global()->GetPrototype());
 
-        v8::Local<v8::ObjectTemplate> objTemplate = module->GenerateObject();
         globals->Set(m_Engine->CreateString(module->GetPackageName()),
-                     objTemplate->NewInstance(context).ToLocalChecked());
+                     module->GenerateObject());
     }
 
     v8::MaybeLocal<v8::Value> ScriptEnv::CompileAndRun(const String& filePath)

@@ -29,6 +29,9 @@
 #include "scripter/utils/Path.h"
 
 #include "scripter/ScriptEnv.h"
+#include "scripter/JavascriptModule.h"
+
+#include "scripter/modules/Console.h"
 
 namespace scripter {
 
@@ -81,45 +84,53 @@ namespace scripter {
     Module* JavascriptModuleImporter::LoadModule(Engine* engine,
                                                  const String& modulePath)
     {
-        v8::HandleScope scope(engine->GetIsolate());
+        v8::Isolate* isolate = engine->GetIsolate();
+        v8::HandleScope scope(isolate);
 
         ScriptEnv* env = new ScriptEnv(engine);
         env->Enable();
 
         ModuleExports exports = {};
 
-        v8::Local<v8::External> data =
-            v8::External::New(engine->GetIsolate(), &exports);
+        v8::Local<v8::External> data = v8::External::New(isolate, &exports);
 
         v8::Local<v8::Function> function =
-            v8::FunctionTemplate::New(engine->GetIsolate(), JSFunc_addExport,
-                                      data)
+            v8::FunctionTemplate::New(isolate, JSFunc_addExport, data)
                 ->GetFunction(env->GetContext())
                 .ToLocalChecked();
 
         env->SetGlobal("addExport", function);
 
+        modules::Console* console = new modules::Console(engine);
+        env->ImportModule(console);
+
         env->CompileAndRun(modulePath);
 
         v8::Local<v8::Function> addFunc = v8::Local<v8::Function>::Cast(
-            exports.exportedValues[0].Get(engine->GetIsolate()));
+            exports.exportedValues[0].Get(isolate));
 
-        v8::Local<v8::Value> args[] = {
-            v8::Integer::New(engine->GetIsolate(), 4),
-            v8::Integer::New(engine->GetIsolate(), 10)};
-        v8::Local<v8::Value> result =
-            addFunc
-                ->Call(env->GetContext(), v8::Null(engine->GetIsolate()), 2,
-                       args)
-                .ToLocalChecked();
-        engine->PrintValue(result);
+        v8::Local<v8::Object> object = v8::Object::New(isolate);
+
+        // v8::Local<v8::Object> val = addFunc->();
+        if (addFunc->IsUndefined())
+        {
+            SCRIPTER_LOG_ERROR("UNDEFINED");
+        }
+
+        object->Set(engine->CreateString("addFunc"), addFunc);
+
+        v8::Persistent<v8::Object> objectPresistent =
+            v8::Persistent<v8::Object>(isolate, object);
+
+        JavascriptModule* module =
+            new JavascriptModule(engine, "test", objectPresistent);
 
         env->Disable();
 
         // NOTE(patrik): Do we need to cache the whole enviroment??
         delete env;
 
-        return nullptr;
+        return module;
     }
 
     JavascriptModuleImporter* JavascriptModuleImporter::Get()

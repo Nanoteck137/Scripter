@@ -29,7 +29,7 @@ namespace scripter {
 
     NativeModule::~NativeModule() {}
 
-    v8::Local<v8::ObjectTemplate> NativeModule::GenerateObject()
+    v8::Local<v8::Object> NativeModule::GenerateObject()
     {
         v8::Isolate* isolate = m_Engine->GetIsolate();
         v8::EscapableHandleScope handleScope(isolate);
@@ -41,7 +41,7 @@ namespace scripter {
                         v8::FunctionTemplate::New(isolate, it->second));
         }
 
-        return handleScope.Escape(result);
+        return handleScope.Escape(result->NewInstance());
     }
 
 } // namespace scripter

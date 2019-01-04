@@ -27,19 +27,20 @@ namespace scripter {
 
     JavascriptModule::JavascriptModule(
         Engine* engine, const String& name,
-        v8::Persistent<v8::ObjectTemplate> objTemplate)
+        v8::Persistent<v8::Object, v8::CopyablePersistentTraits<v8::Object>>
+            obj)
         : Module(engine), m_Name(name)
     {
-        m_ObjectTemplate = objTemplate;
+        m_Object = obj;
     }
 
-    JavascriptModule::~JavascriptModule() { m_ObjectTemplate.Reset(); }
+    JavascriptModule::~JavascriptModule() { m_Object.Reset(); }
 
-    v8::Local<v8::ObjectTemplate> JavascriptModule::GenerateObject()
+    v8::Local<v8::Object> JavascriptModule::GenerateObject()
     {
         v8::EscapableHandleScope handleScope(m_Engine->GetIsolate());
 
-        return handleScope.Escape(m_ObjectTemplate.Get(m_Engine->GetIsolate()));
+        return handleScope.Escape(m_Object.Get(m_Engine->GetIsolate()));
     }
 
     String JavascriptModule::GetPackageName() { return m_Name; }

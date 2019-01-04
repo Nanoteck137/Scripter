@@ -38,7 +38,7 @@ namespace scripter {
     public:
         virtual ~NativeModule();
 
-        virtual v8::Local<v8::ObjectTemplate> GenerateObject() override;
+        virtual v8::Local<v8::Object> GenerateObject() override;
 
         virtual String GetPackageName() override = 0;
     };

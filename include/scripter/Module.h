@@ -135,7 +135,7 @@ namespace scripter {
     public:
         virtual ~Module();
 
-        virtual v8::Local<v8::ObjectTemplate> GenerateObject() = 0;
+        virtual v8::Local<v8::Object> GenerateObject() = 0;
 
         virtual String GetPackageName() = 0;
     };

@@ -21,16 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <linux/limits.h>
-
 #include <scripter/Logger.h>
 #include <scripter/Engine.h>
 #include <scripter/ScriptEnv.h>
